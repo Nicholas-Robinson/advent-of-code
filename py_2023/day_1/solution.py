@@ -1,3 +1,6 @@
+from py_2023.utils.read_all_lines import read_all_lines
+
+
 ###############################################
 # First attempt at part one - Simple solution #
 ###############################################
@@ -201,10 +204,6 @@ def get_numeric_value(line, from_index):
                 0)
 
 
-def read_all_lines(file_path):
-    return [line.strip() for line in open(file_path).readlines()]
-
-
 #####################
 # Running the tests #
 #####################
@@ -212,17 +211,18 @@ def read_all_lines(file_path):
 
 print("== FIRST PASS ==")
 
-PART_ONE_TEST = "./part-one-test.txt"
-PART_ONE_INPUT = "./part-one-input.txt"
-print()
-print("Part one test: ", part_one(PART_ONE_TEST))
-print("Part one input: ", part_one(PART_ONE_INPUT))
 
-PART_TWO_TEST = "./part-two-test.txt"
+PART_ONE_TEST = "part-one-test"
+PART_ONE_INPUT = "part-one-input"
+print()
+print("Part one test: ", part_one("./input/" + PART_ONE_TEST + ".txt"))
+print("Part one input: ", part_one("./input/" + PART_ONE_INPUT + ".txt"))
+
+PART_TWO_TEST = "part-two-test"
 PART_TWO_INPUT = PART_ONE_INPUT
 print()
-print("Part two test: ", part_two(PART_TWO_TEST))
-print("Part two test: ", part_two(PART_TWO_INPUT))
+print("Part two test: ", part_two("./input/" + PART_TWO_TEST + ".txt"))
+print("Part two test: ", part_two("./input/" + PART_TWO_INPUT + ".txt"))
 
 print()
 print("== OPTIMIZED PASS ==")
