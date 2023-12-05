@@ -1,4 +1,4 @@
-from py_2023.utils.read_all_lines import read_all_lines
+from py_2023.utils import read_all_lines_from_input
 
 
 ###############################################
@@ -227,14 +227,14 @@ print("Part two test: ", part_two("./input/" + PART_TWO_INPUT + ".txt"))
 print()
 print("== OPTIMIZED PASS ==")
 
-LINES_TEST_PART_ONE = read_all_lines(PART_ONE_TEST)
-LINES_INPUT_PART_ONE = read_all_lines(PART_ONE_INPUT)
+LINES_TEST_PART_ONE = read_all_lines_from_input(PART_ONE_TEST)
+LINES_INPUT_PART_ONE = read_all_lines_from_input(PART_ONE_INPUT)
 print()
 print("Part one (optimised) test: ", part_one_optimized(LINES_TEST_PART_ONE))
 print("Part one (optimised) input: ", part_one_optimized(LINES_INPUT_PART_ONE))
 
-LINES_TEST_PART_TWO = read_all_lines(PART_TWO_TEST)
-LINES_INPUT_PART_TWO = read_all_lines(PART_ONE_INPUT)
+LINES_TEST_PART_TWO = read_all_lines_from_input(PART_TWO_TEST)
+LINES_INPUT_PART_TWO = read_all_lines_from_input(PART_ONE_INPUT)
 print()
 print("Part two (optimised) test: ", part_two_optimized(LINES_TEST_PART_TWO))
 print("Part two (optimised) input: ", part_two_optimized(LINES_INPUT_PART_TWO))
