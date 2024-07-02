@@ -5,6 +5,7 @@ import day3/solution as day3
 import day4/solution as day4
 import day5/solution as day5
 import day6/solution as day6
+import day7/solution as day7
 import gleam/dict.{type Dict}
 import gleam/int
 import gleam/io
@@ -21,6 +22,7 @@ pub fn main() {
       build_day(4, day4.part_one, day4.part_two),
       build_day(5, day5.part_one, day5.part_two),
       build_day(6, day6.part_one, day6.part_two),
+      build_day(7, day7.part_one, day7.part_two),
     ])
 
   let assert [day, solution] = argv.load().arguments
