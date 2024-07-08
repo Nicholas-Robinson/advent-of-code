@@ -1,5 +1,6 @@
 import argv
 import day1/solution as day1
+import day10/solution as day10
 import day2/solution as day2
 import day3/solution as day3
 import day4/solution as day4
@@ -27,6 +28,7 @@ pub fn main() {
       build_day(7, day7.part_one, day7.part_two),
       build_day(8, day8.part_one, day8.part_two),
       build_day(9, day9.part_one, day9.part_two),
+      build_day(10, day10.part_one, day10.part_two),
     ])
 
   let assert [day, solution] = argv.load().arguments
