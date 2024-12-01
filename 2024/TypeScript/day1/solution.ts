@@ -1,37 +1,35 @@
 import { sumOf, unzip, zip } from "@std/collections";
+import { differenceTuple, multiplyTuple, subtract } from "../utils/calc.ts";
+import { countBy } from "../utils/countBy.ts";
 import { identity } from "../utils/identity.ts";
+import { mapN } from "../utils/mapN.ts";
+import { pairWith } from "../utils/pairWith.ts";
 
 type Parsed = [number[], number[]];
 
 export function parse(raw: string): Parsed {
-  const lines = raw.split("\n");
+  const columns = raw
+    .split("\n")
+    .map((line) => line.split(/\s+/) as [string, string]);
 
-  const numbers = lines
-    .map((line) => line.split(/\s+/))
-    .map(([left, right]) => [Number(left), Number(right)] as [number, number]);
-
-  return unzip(numbers);
+  return unzip(mapN(columns, Number, Number));
 }
 
 export function part1([left, right]: Parsed) {
-  const leftSort = left.sort((a, b) => a - b);
-  const rightSort = right.sort((a, b) => a - b);
+  const pairs = zip(sortAscending(left), sortAscending(right));
+  const differences = pairs.map(differenceTuple);
 
-  const pairs = zip(leftSort, rightSort)
-    .map(([a, b]) => Math.abs(a - b));
-
-  return sumOf(pairs, identity);
+  return sumOf(differences, identity);
 }
 
 export function part2([left, right]: Parsed) {
-  const counts = right.reduce((acc, value) => {
-    acc[value] = (acc[value] ?? 0) + 1;
-    return acc;
-  }, [] as number[]);
+  const counts = countBy(right, identity);
+  const pairs = pairWith(left, (value) => counts[value] ?? 0);
+  const products = pairs.map(multiplyTuple);
 
-  const pairs = left
-    .map((value) => [value, counts[value] ?? 0] as const)
-    .map(([value, count]) => value * count);
+  return sumOf(products, identity);
+}
 
-  return sumOf(pairs, identity);
+function sortAscending(list: number[]) {
+  return list.sort(subtract);
 }
