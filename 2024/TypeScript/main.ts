@@ -47,13 +47,16 @@ if (import.meta.main) {
 
       const parse = solution.parse ?? creteNoParse();
       const solve = solution[`part${part}`] ?? createNoSolution();
-      const output = solve(parse(input));
 
-      console.log(
-        `%c[SOLUTION] day ${day} | part ${part} ::`,
-        `color: green; font-weight: bold`,
-        output,
-      );
+      for (const { caseNumber, lines } of parseTestCases(input)) {
+        const output = solve(parse(lines.join("\n")));
+
+        console.log(
+          `%c[SOLUTION] day ${day} | part ${part} | case ${caseNumber} ::`,
+          `color: green; font-weight: bold`,
+          output,
+        );
+      }
     } catch (error) {
       if (error === "No solution") {
         console.log(
@@ -107,4 +110,28 @@ function creteNoParse<T>(): (raw: string) => T {
 
 function isPart(part: string | undefined): part is Part {
   return part !== undefined;
+}
+
+function parseTestCases(input: string) {
+  const testCases: { caseNumber: number; lines: string[] }[] = [];
+
+  const lines = input.split("\n");
+
+  while (lines.length > 0) {
+    const candidate = lines.shift();
+
+    if (!candidate?.toLowerCase().startsWith("## test")) {
+      continue;
+    }
+
+    const caseNumber = parseInt(candidate.split(" ")[2]);
+    const caseLines: string[] = [];
+    while (!lines[0]?.toLowerCase().startsWith("## end")) {
+      caseLines.push(lines.shift() ?? "");
+    }
+
+    testCases.push({ caseNumber: caseNumber, lines: caseLines });
+  }
+
+  return testCases;
 }
