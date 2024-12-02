@@ -18,6 +18,10 @@ export function subtract(a: number, b: number) {
   return a - b;
 }
 
+export function subtractTuple([a, b]: [number, number]) {
+  return subtract(a, b);
+}
+
 export function diff(a: number, b: number) {
   return Math.abs(a - b);
 }
