@@ -8,4 +8,8 @@ export const Fn = {
     console.log(value);
     return value;
   },
+
+  orDefault: <T>(defaultValue: T) => (value: T | null | undefined): T => {
+    return value ?? defaultValue;
+  }
 };
