@@ -2,6 +2,9 @@ export const Arr = {
   map: <T, R>(fn: (item: T, index: number) => R) => (arr: T[]): R[] =>
     arr.map(fn),
 
+  flatMap: <T, R>(fn: (item: T, index: number) => R[]) => (arr: T[]): R[] =>
+    arr.flatMap(fn),
+
   filter: <T>(fn: (item: T, index: number) => boolean) => (arr: T[]): T[] =>
     arr.filter(fn),
 

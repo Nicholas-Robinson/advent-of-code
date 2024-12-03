@@ -1,7 +1,7 @@
 import { differenceTuple } from "../utils/calc.ts"
 import { mapNested } from "../utils/mapNested.ts"
 import { Arr } from "../utils/pipeline/Arr.ts"
-import { pipeline } from "../utils/pipeline/pipeline.ts"
+import { seededPipeline } from "../utils/pipeline/seededPipeline.ts"
 import { spaceSeparatedLines } from "../utils/spaceSeparatedLines.ts"
 
 type Parsed = number[][];
@@ -12,7 +12,7 @@ export function parse(raw: string): Parsed {
 }
 
 export function part1(input: Parsed) {
-  const safeLines = pipeline(
+  const safeLines = seededPipeline(
     input,
     // Filter out the lines that are all increasing or decreasing
     Arr.filter(isAllIncreasingOrDecreasing),

@@ -11,5 +11,7 @@ export const Fn = {
 
   orDefault: <T>(defaultValue: T) => (value: T | null | undefined): T => {
     return value ?? defaultValue;
-  }
+  },
+
+  identity: <T>(value: T): T => value,
 };

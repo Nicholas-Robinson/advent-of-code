@@ -49,12 +49,12 @@ if (import.meta.main) {
       const solve = solution[`part${part}`] ?? createNoSolution();
 
       for (const { caseNumber, lines } of parseTestCases(input)) {
+        console.time(`[SOLUTION] day ${day} | part ${part} | case ${caseNumber}`);
         const output = solve(parse(lines.join("\n")));
 
-        console.log(
-          `%c[SOLUTION] day ${day} | part ${part} | case ${caseNumber} ::`,
-          `color: green; font-weight: bold`,
-          output,
+        console.timeLog(
+            `[SOLUTION] day ${day} | part ${part} | case ${caseNumber}`,
+          `= ${output}`,
         );
       }
     } catch (error) {
