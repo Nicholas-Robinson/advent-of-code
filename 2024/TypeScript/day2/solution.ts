@@ -4,7 +4,6 @@ import { seededPipeline } from "../utils/pipeline/_seededPipeline.ts"
 import { Arr } from "../utils/pipeline/Arr.ts"
 import { Bool } from "../utils/pipeline/Bool.ts"
 import { Fn } from "../utils/pipeline/Fn.ts"
-import { Num } from "../utils/pipeline/Num.ts"
 import { Str } from "../utils/pipeline/Str.ts"
 
 type Parsed = number[][];
@@ -16,8 +15,8 @@ export const parse = pipeline(
 );
 
 const isAllIncreasingOrDecreasing = Bool.passAny(
-  checkMagnitude(Fn.uncurry(Num.gt)),
-  checkMagnitude(Fn.uncurry(Num.lt)),
+  checkMagnitude(Fn.uncurry(Bool.gt)),
+  checkMagnitude(Fn.uncurry(Bool.lt)),
 );
 
 export const part1 = pipeline(
@@ -42,7 +41,7 @@ export function part2(input: Parsed) {
       Arr.prepend(line),
       Arr.map((row) => [row]),
       Arr.some(
-        pipeline(part1, Num.gt(0)),
+        pipeline(part1, Bool.gt(0)),
       ),
     );
   });
