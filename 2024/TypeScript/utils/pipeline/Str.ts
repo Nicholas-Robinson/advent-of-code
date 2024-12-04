@@ -9,4 +9,8 @@ export const Str = {
     lines: (str: string) => str.split('\n'),
     words: (str: string) => str.split(' '),
     chars: (str: string) => str.split(''),
+
+    unlines: (arr: string[]) => arr.join('\n'),
+    unwords: (arr: string[]) => arr.join(' '),
+    unchars: (arr: string[]) => arr.join(''),
 }

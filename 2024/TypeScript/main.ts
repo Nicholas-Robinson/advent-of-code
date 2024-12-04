@@ -52,10 +52,12 @@ if (import.meta.main) {
         console.time(`[SOLUTION] day ${day} | part ${part} | case ${caseNumber}`);
         const output = solve(parse(lines.join("\n")));
 
-        console.timeLog(
-            `[SOLUTION] day ${day} | part ${part} | case ${caseNumber}`,
-          `= ${output}`,
-        );
+        console.timeLog(`[SOLUTION] day ${day} | part ${part} | case ${caseNumber}`);
+        console.log(
+            `%c[RESULT] ::`,
+            `color: green; font-weight: bold`,
+            output,
+        )
       }
     } catch (error) {
       if (error === "No solution") {
