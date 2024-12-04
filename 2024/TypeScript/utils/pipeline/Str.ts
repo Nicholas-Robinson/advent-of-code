@@ -3,6 +3,10 @@ export const Str = {
     bisect: (separator: string | RegExp) => (str: string) => str.split(separator, 2) as [string, string],
     match: (regex: RegExp) => (str: string) => str.match(regex),
 
-    drop: <T>(n: number) => (arr: string): string => arr.slice(n),
-    dropEnd: <T>(n: number) => (arr: string): string => arr.slice(0, arr.length - n),
+    drop: (n: number) => (arr: string): string => arr.slice(n),
+    dropEnd: (n: number) => (arr: string): string => arr.slice(0, arr.length - n),
+
+    lines: (str: string) => str.split('\n'),
+    words: (str: string) => str.split(' '),
+    chars: (str: string) => str.split(''),
 }

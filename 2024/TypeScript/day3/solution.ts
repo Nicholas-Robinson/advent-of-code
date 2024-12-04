@@ -1,7 +1,7 @@
+import { pipeline } from "../utils/pipeline/_pipeline.ts"
 import { Arr } from "../utils/pipeline/Arr.ts"
 import { Fn } from "../utils/pipeline/Fn.ts"
 import { Num } from "../utils/pipeline/Num.ts"
-import { pipeline } from "../utils/pipeline/seededPipeline.ts"
 import { Str } from "../utils/pipeline/Str.ts"
 import { Tuple } from "../utils/pipeline/Tuple.ts"
 
