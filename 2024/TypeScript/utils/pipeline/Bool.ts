@@ -11,4 +11,6 @@ export const Bool = {
   gte: <T>(a: T) => (b: T): boolean => a <= b,
   eq: <T>(a: T) => (b: T): boolean => a === b,
   neq: <T>(a: T) => (b: T): boolean => a !== b,
+
+  invert: <T>(fn: (value: T) => boolean) => (value: T) => !fn(value),
 };

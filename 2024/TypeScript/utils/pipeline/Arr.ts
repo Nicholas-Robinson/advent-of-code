@@ -23,11 +23,15 @@ export const Arr = {
     <T, R>(fn: (acc: R, item: T, index: number) => R, initialValue: R) =>
     (arr: T[]): R => arr.reduce(fn, initialValue),
 
-  mapNested: <T, R>(fn: (item: T, x: number, y: number) => R) => (arr: T[][]): R[][] =>
-    arr.map((subArr, y) => subArr.map((value, x) => fn(value, x, y))),
+  sort: <T>(fn: (a: T, b: T) => number) => (arr: T[]): T[] => arr.toSorted(fn),
 
-  flatMapNested: <T, R>(fn: (item: T, x: number, y: number) => R[]) => (arr: T[][]): R[] =>
-    arr.flatMap((subArr, y) => subArr.flatMap((value, x) => fn(value, x, y))),
+  mapNested:
+    <T, R>(fn: (item: T, x: number, y: number) => R) => (arr: T[][]): R[][] =>
+      arr.map((subArr, y) => subArr.map((value, x) => fn(value, x, y))),
+
+  flatMapNested:
+    <T, R>(fn: (item: T, x: number, y: number) => R[]) => (arr: T[][]): R[] =>
+      arr.flatMap((subArr, y) => subArr.flatMap((value, x) => fn(value, x, y))),
 
   filterNested:
     <T>(fn: (item: T, index: number) => boolean) => (arr: T[][]): T[][] =>
@@ -44,6 +48,22 @@ export const Arr = {
 
     for (let i = 0; i < arr.length - 1; i++) {
       output.push([arr[i], arr[i + 1]]);
+    }
+
+    return output;
+  },
+
+  groupBy: <T, K extends keyof any>(getKey: (item: T) => K) => (arr: T[]): Record<K, T[]> => {
+    const output = {} as Record<K, T[]>;
+
+    for (const item of arr) {
+      const key = getKey(item);
+
+      if (!output[key]) {
+        output[key] = [];
+      }
+
+      output[key].push(item);
     }
 
     return output;
