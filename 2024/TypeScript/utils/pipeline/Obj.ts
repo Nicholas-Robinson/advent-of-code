@@ -1,6 +1,11 @@
 export const Obj = {
   entries: <K extends keyof any, V>(obj: Record<K, V>) =>
     Object.entries(obj) as [K, V][],
+
+  keys: <K extends keyof any>(obj: Record<K, any>) => Object.keys(obj) as K[],
+
+  values: <V>(obj: Record<any, V>) => Object.values(obj) as V[],
+
   fromEntries: <K extends keyof any, V>(entries: [K, V][]) =>
     Object.fromEntries(entries) as Record<K, V>,
 
@@ -8,7 +13,6 @@ export const Obj = {
     Obj.fromEntries(Obj.entries(obj).map(([k, v]) => [fn(k), v])),
 
   mapValues:
-    <K extends keyof any, V, V2>(fn: (value: V) => V2) =>
-    (obj: Record<K, V>) =>
+    <K extends keyof any, V, V2>(fn: (value: V) => V2) => (obj: Record<K, V>) =>
       Obj.fromEntries(Obj.entries(obj).map(([k, v]) => [k, fn(v)])),
 };

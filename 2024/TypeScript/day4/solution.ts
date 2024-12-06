@@ -1,9 +1,9 @@
-import { pipeline } from "../utils/pipeline/_pipeline.ts"
-import { seededPipeline } from "../utils/pipeline/_seededPipeline.ts"
-import { Arr } from "../utils/pipeline/Arr.ts"
-import { Bool } from "../utils/pipeline/Bool.ts"
-import { Fn } from "../utils/pipeline/Fn.ts"
-import { Str } from "../utils/pipeline/Str.ts"
+import { pipeline } from "../utils/pipeline/_pipeline.ts";
+import { seededPipeline } from "../utils/pipeline/_seededPipeline.ts";
+import { Arr } from "../utils/pipeline/Arr.ts";
+import { Bool } from "../utils/pipeline/Bool.ts";
+import { Fn } from "../utils/pipeline/Fn.ts";
+import { Str } from "../utils/pipeline/Str.ts";
 
 type DeltaList = [number, number][][];
 

@@ -1,11 +1,11 @@
-import { pipeline } from "../utils/pipeline/_pipeline.ts"
-import { seededPipeline } from "../utils/pipeline/_seededPipeline.ts"
-import { Arr } from "../utils/pipeline/Arr.ts"
-import { Bool } from "../utils/pipeline/Bool.ts"
-import { Num } from "../utils/pipeline/Num.ts"
-import { Obj } from "../utils/pipeline/Obj.ts"
-import { Str } from "../utils/pipeline/Str.ts"
-import { Tuple } from "../utils/pipeline/Tuple.ts"
+import { pipeline } from "../utils/pipeline/_pipeline.ts";
+import { seededPipeline } from "../utils/pipeline/_seededPipeline.ts";
+import { Arr } from "../utils/pipeline/Arr.ts";
+import { Bool } from "../utils/pipeline/Bool.ts";
+import { Num } from "../utils/pipeline/Num.ts";
+import { Obj } from "../utils/pipeline/Obj.ts";
+import { Str } from "../utils/pipeline/Str.ts";
+import { Tuple } from "../utils/pipeline/Tuple.ts";
 
 type Parsed = { rules: [number, number][]; updates: number[][] };
 

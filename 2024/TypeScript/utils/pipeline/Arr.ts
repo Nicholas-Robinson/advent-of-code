@@ -53,21 +53,23 @@ export const Arr = {
     return output;
   },
 
-  groupBy: <T, K extends keyof any>(getKey: (item: T) => K) => (arr: T[]): Record<K, T[]> => {
-    const output = {} as Record<K, T[]>;
+  groupBy:
+    <T, K extends keyof any>(getKey: (item: T) => K) =>
+    (arr: T[]): Record<K, T[]> => {
+      const output = {} as Record<K, T[]>;
 
-    for (const item of arr) {
-      const key = getKey(item);
+      for (const item of arr) {
+        const key = getKey(item);
 
-      if (!output[key]) {
-        output[key] = [];
+        if (!output[key]) {
+          output[key] = [];
+        }
+
+        output[key].push(item);
       }
 
-      output[key].push(item);
-    }
-
-    return output;
-  },
+      return output;
+    },
 
   length: <T>(arr: T[]): number => arr.length,
 };

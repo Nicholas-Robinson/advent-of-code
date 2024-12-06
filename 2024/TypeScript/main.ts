@@ -49,15 +49,19 @@ if (import.meta.main) {
       const solve = solution[`part${part}`] ?? createNoSolution();
 
       for (const { caseNumber, lines } of parseTestCases(input)) {
-        console.time(`[SOLUTION] day ${day} | part ${part} | case ${caseNumber}`);
+        console.time(
+          `[SOLUTION] day ${day} | part ${part} | case ${caseNumber}`,
+        );
         const output = solve(parse(lines.join("\n")));
 
-        console.timeLog(`[SOLUTION] day ${day} | part ${part} | case ${caseNumber}`);
+        console.timeLog(
+          `[SOLUTION] day ${day} | part ${part} | case ${caseNumber}`,
+        );
         console.log(
-            `%c[RESULT] ::`,
-            `color: green; font-weight: bold`,
-            output,
-        )
+          `%c[RESULT] ::`,
+          `color: green; font-weight: bold`,
+          output,
+        );
       }
     } catch (error) {
       if (error === "No solution") {

@@ -1,9 +1,9 @@
-import { pipeline } from "../utils/pipeline/_pipeline.ts"
-import { Arr } from "../utils/pipeline/Arr.ts"
-import { Fn } from "../utils/pipeline/Fn.ts"
-import { Num } from "../utils/pipeline/Num.ts"
-import { Str } from "../utils/pipeline/Str.ts"
-import { Tuple } from "../utils/pipeline/Tuple.ts"
+import { pipeline } from "../utils/pipeline/_pipeline.ts";
+import { Arr } from "../utils/pipeline/Arr.ts";
+import { Fn } from "../utils/pipeline/Fn.ts";
+import { Num } from "../utils/pipeline/Num.ts";
+import { Str } from "../utils/pipeline/Str.ts";
+import { Tuple } from "../utils/pipeline/Tuple.ts";
 
 export const parse = Fn.identity;
 
