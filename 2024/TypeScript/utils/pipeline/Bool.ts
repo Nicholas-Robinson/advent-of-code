@@ -13,4 +13,11 @@ export const Bool = {
   neq: <T>(a: T) => (b: T): boolean => a !== b,
 
   invert: <T>(fn: (value: T) => boolean) => (value: T) => !fn(value),
+
+  branch: <T, U, W>(
+    fn: (value: T) => boolean,
+    onTrue: (value: T) => U,
+    onFalse: (value: T) => W,
+  ) =>
+  (value: T) => fn(value) ? onTrue(value) : onFalse(value),
 };

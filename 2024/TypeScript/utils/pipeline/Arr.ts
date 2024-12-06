@@ -25,6 +25,18 @@ export const Arr = {
 
   sort: <T>(fn: (a: T, b: T) => number) => (arr: T[]): T[] => arr.toSorted(fn),
 
+  unique: <T>(arr: T[]): T[] => {
+    const seen = new Set<string>();
+    return arr.filter((item) => {
+      const key = `${item}`;
+      if (seen.has(key)) {
+        return false;
+      }
+      seen.add(key);
+      return true;
+    });
+  },
+
   mapNested:
     <T, R>(fn: (item: T, x: number, y: number) => R) => (arr: T[][]): R[][] =>
       arr.map((subArr, y) => subArr.map((value, x) => fn(value, x, y))),
@@ -69,6 +81,18 @@ export const Arr = {
       }
 
       return output;
+    },
+
+  generateNextUntil:
+    <T>(gen: (prev: T) => T, condition: (current: T) => boolean) =>
+    (arr: T[]) => {
+      const res = arr.slice();
+
+      while (!condition(res[res.length - 1])) {
+        res.push(gen(res[res.length - 1]));
+      }
+
+      return res;
     },
 
   length: <T>(arr: T[]): number => arr.length,
