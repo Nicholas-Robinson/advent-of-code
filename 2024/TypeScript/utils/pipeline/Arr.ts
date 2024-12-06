@@ -62,7 +62,7 @@ export const Arr = {
     <T>(fn: (item: T, x: number, y: number) => boolean) =>
     (arr: T[][]): [number, number] => {
       for (let y = 0; y < arr.length; y++) {
-        if (arr[y] === undefined) return null;
+        if (arr[y] === undefined) return [-1, -1];
         for (let x = 0; x < arr[y].length; x++) {
           if (fn(arr[y][x], x, y)) {
             return [x, y];
