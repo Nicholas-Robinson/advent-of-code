@@ -2,8 +2,9 @@ export const Bool = {
   passAll: <T>(...args: ((value: T) => boolean)[]) => (value: T) =>
     args.every((fn) => fn(value)),
 
-  passAny: <T>(...args: ((value: T) => boolean)[]) => (value: T) =>
-    args.some((fn) => fn(value)),
+  passAny:
+    <T extends any[]>(...args: ((...params: T) => boolean)[]) =>
+    (...params: T) => args.some((fn) => fn(...params)),
 
   lt: <T>(a: T) => (b: T): boolean => a > b,
   lte: <T>(a: T) => (b: T): boolean => a >= b,
