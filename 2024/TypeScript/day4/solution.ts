@@ -53,7 +53,7 @@ export function part2(input: Parsed) {
     // Remove all those that are not crossing "MAS"
     Arr.filterNested(
       Arr.every(
-        Bool.passAny(Bool.eq("MAS"), Bool.eq("SAM")),
+        Bool.passAny([Bool.eq("MAS"), Bool.eq("SAM")]),
       ),
     ),
     // Clean up and count

@@ -14,10 +14,10 @@ export const parse = pipeline(
   Arr.mapNested(Number),
 );
 
-const isAllIncreasingOrDecreasing = Bool.passAny(
+const isAllIncreasingOrDecreasing = Bool.passAny([
   checkMagnitude(Fn.uncurry(Bool.gt)),
   checkMagnitude(Fn.uncurry(Bool.lt)),
-);
+]);
 
 export const part1 = pipeline(
   // Filter out the lines that are all increasing or decreasing

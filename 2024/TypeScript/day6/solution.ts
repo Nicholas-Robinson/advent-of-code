@@ -50,10 +50,10 @@ const getPath = (lines: string[], position: Cood) =>
   );
 
 const isTheEndOfThePath = (lines: string[]) =>
-  Bool.passAny(
+  Bool.passAny([
     isWalkingInALoop,
     lookDownAndSeeNothing(lines),
-  );
+  ]);
 
 const takeStepOrTurnRight = (lines: string[]) =>
   Bool.branch(
