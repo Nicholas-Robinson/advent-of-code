@@ -72,6 +72,8 @@ export const Arr = {
       return [-1, -1];
     },
 
+  flatten: <T>(arr: T[][]): T[] => arr.flat(),
+
   drop: <T>(n: number) => (arr: T[]): T[] => arr.slice(n),
   dropEnd: <T>(n: number) => (arr: T[]): T[] => arr.slice(0, arr.length - n),
   dropNth: <T>(n: number) => (arr: T[]): T[] => arr.filter((_, i) => i !== n),
@@ -121,4 +123,16 @@ export const Arr = {
   },
 
   length: <T>(arr: T[]): number => arr.length,
+
+  combinationPairs: <T>(arr: T[]): [T, T][] => {
+    const result = [] as [T, T][];
+
+    for (let i = 0; i < arr.length; i++) {
+      for (let j = i + 1; j < arr.length; j++) {
+        result.push([arr[i], arr[j]]);
+      }
+    }
+
+    return result;
+  },
 };
