@@ -9,6 +9,8 @@ export const Str = {
   drop: (n: number) => (arr: string): string => arr.slice(n),
   dropEnd: (n: number) => (arr: string): string => arr.slice(0, arr.length - n),
 
+  take: (n: number) => (arr: string): string => arr.slice(0, n),
+
   paragraphs: (str: string): string[] => str.split("\n\n"),
   lines: (str: string): string[] => str.split("\n"),
   words: (str: string): string[] => str.split(" "),

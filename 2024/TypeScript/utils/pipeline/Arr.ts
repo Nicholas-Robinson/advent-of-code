@@ -78,6 +78,8 @@ export const Arr = {
   dropEnd: <T>(n: number) => (arr: T[]): T[] => arr.slice(0, arr.length - n),
   dropNth: <T>(n: number) => (arr: T[]): T[] => arr.filter((_, i) => i !== n),
 
+  take: <T>(n: number) => (arr: T[]): T[] => arr.slice(0, n),
+
   prepend: <T>(item: T) => (arr: T[]): T[] => [item, ...arr],
 
   pairWithNext: <T>(arr: T[]): [T, T][] => {
@@ -85,6 +87,16 @@ export const Arr = {
 
     for (let i = 0; i < arr.length - 1; i++) {
       output.push([arr[i], arr[i + 1]]);
+    }
+
+    return output;
+  },
+
+  pairWithIndex: <T>(arr: T[]): [number, T][] => {
+    const output: [number, T][] = [];
+
+    for (let i = 0; i < arr.length; i++) {
+      output.push([i, arr[i]]);
     }
 
     return output;
