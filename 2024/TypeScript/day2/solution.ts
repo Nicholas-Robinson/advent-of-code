@@ -1,6 +1,6 @@
 import { differenceTuple } from "../utils/calc.ts";
 import { pipeline } from "../utils/pipeline/_pipeline.ts";
-import { seededPipeline } from "../utils/pipeline/_seededPipeline.ts";
+import { pipe } from "../utils/pipeline/_pipe.ts";
 import { Arr } from "../utils/pipeline/Arr.ts";
 import { Bool } from "../utils/pipeline/Bool.ts";
 import { Fn } from "../utils/pipeline/Fn.ts";
@@ -35,7 +35,7 @@ const createSubArrayOf = Fn.flip(Arr.dropNth<number>);
 
 export function part2(input: Parsed) {
   const faultTolerantSafeLines = input.filter((line) => {
-    return seededPipeline(
+    return pipe(
       Arr.range(0, line.length),
       Arr.map(createSubArrayOf(line)),
       Arr.prepend(line),

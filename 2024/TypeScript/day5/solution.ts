@@ -1,5 +1,5 @@
 import { pipeline } from "../utils/pipeline/_pipeline.ts";
-import { seededPipeline } from "../utils/pipeline/_seededPipeline.ts";
+import { pipe } from "../utils/pipeline/_pipe.ts";
 import { Arr } from "../utils/pipeline/Arr.ts";
 import { Bool } from "../utils/pipeline/Bool.ts";
 import { Num } from "../utils/pipeline/Num.ts";
@@ -34,7 +34,7 @@ const buildRulesLookup = pipeline(
 export function part1({ rules, updates }: Parsed) {
   const rulesLookup = buildRulesLookup(rules);
 
-  return seededPipeline(
+  return pipe(
     updates,
     Arr.filter(filterByRules(rulesLookup)),
     Arr.map((arr) => arr[Math.floor(arr.length / 2)]),
@@ -45,7 +45,7 @@ export function part1({ rules, updates }: Parsed) {
 export function part2({ rules, updates }: Parsed) {
   const rulesLookup = buildRulesLookup(rules);
 
-  return seededPipeline(
+  return pipe(
     updates,
     Arr.filter(Bool.invert(filterByRules(rulesLookup))),
     Arr.map(Arr.sort(sortByRules(rulesLookup))),

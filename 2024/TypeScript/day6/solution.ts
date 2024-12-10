@@ -1,5 +1,5 @@
 import { pipeline } from "../utils/pipeline/_pipeline.ts";
-import { seededPipeline } from "../utils/pipeline/_seededPipeline.ts";
+import { pipe } from "../utils/pipeline/_pipe.ts";
 import { Arr } from "../utils/pipeline/Arr.ts";
 import { Bool } from "../utils/pipeline/Bool.ts";
 import { Num } from "../utils/pipeline/Num.ts";
@@ -20,7 +20,7 @@ export const parse = pipeline(
 );
 
 export function part1([[x, y], lines]: Parsed) {
-  return seededPipeline(
+  return pipe(
     getPath(lines, [x, y]),
     Arr.unique,
     Arr.length,
@@ -29,7 +29,7 @@ export function part1([[x, y], lines]: Parsed) {
 }
 
 export function part2([[x, y], lines]: Parsed) {
-  return seededPipeline(
+  return pipe(
     getPath(lines, [x, y]),
     Arr.unique,
     Arr.flatMap(addNewTestBlock(lines)),
@@ -40,7 +40,7 @@ export function part2([[x, y], lines]: Parsed) {
 }
 
 const getPath = (lines: string[], position: Cood) =>
-  seededPipeline(
+  pipe(
     [[position, [0, -1]]] as Vec[],
     Arr.generateNextUntil(
       takeStepOrTurnRight(lines),

@@ -1,5 +1,5 @@
 import { pipeline } from "../utils/pipeline/_pipeline.ts";
-import { seededPipeline } from "../utils/pipeline/_seededPipeline.ts";
+import { pipe } from "../utils/pipeline/_pipe.ts";
 import { Arr } from "../utils/pipeline/Arr.ts";
 import { Bool } from "../utils/pipeline/Bool.ts";
 import { Fn } from "../utils/pipeline/Fn.ts";
@@ -31,7 +31,7 @@ type Parsed = string[][];
 export const parse = pipeline(Str.lines, Arr.map(Str.chars));
 
 export function part1(input: Parsed) {
-  return seededPipeline(
+  return pipe(
     input,
     Arr.flatMapNested((value, x, y) =>
       value === "X" ? buildXmasSamples(XMAS_DELTA_LIST, input, x, y) : []
@@ -42,7 +42,7 @@ export function part1(input: Parsed) {
 }
 
 export function part2(input: Parsed) {
-  return seededPipeline(
+  return pipe(
     input,
     // Get all the crossing words (all much start with "A" so we can short-circuit all the other searched)
     Arr.mapNested((value, x, y) =>
@@ -69,7 +69,7 @@ function buildXmasSamples(
   x: number,
   y: number,
 ) {
-  return seededPipeline(
+  return pipe(
     deltas,
     Arr.mapNested(([dx, dy]) => input[y + dy]?.[x + dx]),
     Arr.map(Str.unchars),

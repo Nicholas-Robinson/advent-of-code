@@ -11,4 +11,6 @@ export const Num = {
   subtract: (b: number) => (a: number): number => a - b,
   divide: (b: number) => (a: number): number => a / b,
   multiply: (b: number) => (a: number): number => a * b,
+
+  max: (arr: number[]): number => Math.max(...arr),
 };

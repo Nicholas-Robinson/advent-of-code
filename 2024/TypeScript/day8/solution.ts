@@ -1,4 +1,4 @@
-import { seededPipeline } from "../utils/pipeline/_seededPipeline.ts";
+import { pipe } from "../utils/pipeline/_pipe.ts";
 import { Arr } from "../utils/pipeline/Arr.ts";
 import { Bool } from "../utils/pipeline/Bool.ts";
 import { Fn } from "../utils/pipeline/Fn.ts";
@@ -12,7 +12,7 @@ type Parsed = { map: string[]; nodes: Record<string, Node[]> };
 export function parse(raw: string): Parsed {
   const map = Str.lines(raw);
 
-  const nodes = seededPipeline(
+  const nodes = pipe(
     map,
     Arr.map(Str.chars),
     Arr.mapNested((char, x, y) => [char, [x, y]] as [string, Node]),
@@ -26,7 +26,7 @@ export function parse(raw: string): Parsed {
 }
 
 export function part1(input: Parsed) {
-  return seededPipeline(
+  return pipe(
     input.nodes,
     Obj.mapValues(Arr.combinationPairs),
     Obj.mapValues(Arr.map((pair) => [
@@ -43,7 +43,7 @@ export function part1(input: Parsed) {
 }
 
 export function part2(input: Parsed) {
-  return seededPipeline(
+  return pipe(
     input.nodes,
     Obj.mapValues(Arr.combinationPairs),
     Obj.mapValues(Arr.map(findAllAntinodes)),
@@ -66,7 +66,7 @@ function findAntinode([[ax, ay], [bx, by]]: [Node, Node]) {
 function findAllAntinodes([[ax, ay], [bx, by]]: [Node, Node]) {
   const [dy, dx] = [by - ay, bx - ax];
 
-  return seededPipeline(
+  return pipe(
     Arr.range(0, 100),
     Arr.flatMap((i) => [i, -i]),
     Arr.map((i) => [ax + i * dx, ay + i * dy] as Node),

@@ -1,8 +1,12 @@
+import { pipe } from "./_pipe.ts";
+
 export const Arr = {
   of: <T>(...items: T[]): T[] => items,
 
   range: (start: number, end: number) =>
     Array.from({ length: end - start }, (_, i) => i + start),
+
+  clone: <T>(arr: T[]): T[] => arr.slice(),
 
   map: <T, R>(fn: (item: T, index: number) => R) => (arr: T[]): R[] =>
     arr.map(fn),
@@ -26,6 +30,7 @@ export const Arr = {
     (arr: T[]): R => arr.reduce(fn, initialValue),
 
   sort: <T>(fn: (a: T, b: T) => number) => (arr: T[]): T[] => arr.toSorted(fn),
+  reverse: <T>(arr: T[]): T[] => arr.reverse(),
 
   head: <T>(arr: T[]): T => arr[0],
   last: <T>(arr: T[]): T => arr[arr.length - 1],
@@ -33,6 +38,15 @@ export const Arr = {
   findIndex:
     <T>(fn: (item: T, index: number) => boolean) => (arr: T[]): number =>
       arr.findIndex(fn),
+
+  findLastIndex:
+    <T>(fn: (item: T, index: number) => boolean) => (arr: T[]): number => {
+      for (let i = arr.length - 1; i >= 0; i--) {
+        if (fn(arr[i], i)) return i;
+      }
+
+      return -1;
+    },
 
   unique: <T>(arr: T[]): T[] => {
     const seen = new Set<string>();
@@ -101,6 +115,12 @@ export const Arr = {
 
     return output;
   },
+
+  pairWithIndexNested: <T>(arr: T[][]): [number, number, T][][] =>
+    pipe(
+      arr,
+      Arr.mapNested((item, x, y) => [x, y, item] as [number, number, T]),
+    ),
 
   groupBy:
     <T, K extends keyof any>(getKey: (item: T) => K) =>
