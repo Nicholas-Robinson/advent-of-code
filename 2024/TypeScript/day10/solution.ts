@@ -6,13 +6,15 @@ import { Num } from "../utils/pipeline/Num.ts";
 import { Str } from "../utils/pipeline/Str.ts";
 import { FixNode } from "./fixNode.ts";
 
-export const parse = pipeline(
-    Str.lines,
-    Arr.map(Str.chars),
-    Arr.mapNested(Number),
-);
+type Parsed = FixNode[];
+type Parser = (input: string) => Parsed;
+type Solution = (input: Parsed) => number;
 
-const loadTrailHeads = pipeline(
+export const parse: Parser = pipeline(
+  // Parse input
+  Str.lines,
+  Arr.map(Str.chars),
+  Arr.mapNested(Number),
   // Create and populate the map
   Arr.mapNested(FixNode.create),
   Fn.tap((map) => {
@@ -31,17 +33,13 @@ const loadTrailHeads = pipeline(
   Arr.flatten,
 );
 
-export const part1 = pipeline(
-  loadTrailHeads,
-  // Resolve paths
+export const part1: Solution = pipeline(
   Arr.map((node) => node.findEnds([], [])),
   Arr.map(pipeline(_Set.from, _Set.size)),
   Num.sumAll,
 );
 
-export const part2 = pipeline(
-  loadTrailHeads,
-  // Resolve paths
+export const part2: Solution = pipeline(
   Arr.map((node) => node.findEnds([], [])),
   Arr.map(Arr.length),
   Num.sumAll,
