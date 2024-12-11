@@ -1,7 +1,6 @@
 import gleam/io
 import gleam/list
 import gleam/pair
-import gleam/result
 import gleam/string
 import gleam/yielder
 
@@ -50,14 +49,13 @@ fn find_start(input: List(List(#(String, Int)))) {
 fn is_start(tuple: #(String, Int)) {
   pair.first(tuple) == "^"
 }
-
-fn get_path(lines: List(List(String)), position: #(Int, Int)) {
-  todo
-}
-
-fn take_step_or_turn_left(
-  vec: #(#(Int, Int), #(Int, Int)),
-  lines: List(List(String)),
-) {
-  todo
-}
+//fn get_path(lines: List(List(String)), position: #(Int, Int)) {
+//  todo
+//}
+//
+//fn take_step_or_turn_left(
+//  vec: #(#(Int, Int), #(Int, Int)),
+//  lines: List(List(String)),
+//) {
+//  todo
+//}
