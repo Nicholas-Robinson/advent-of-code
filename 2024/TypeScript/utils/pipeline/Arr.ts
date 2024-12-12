@@ -7,9 +7,22 @@ export const Arr = {
     Array.from({ length: end - start }, (_, i) => i + start),
 
   clone: <T>(arr: T[]): T[] => arr.slice(),
+  append: <T>(item: T) => (arr: T[]): T[] => arr.slice().concat(item),
 
   map: <T, R>(fn: (item: T, index: number) => R) => (arr: T[]): R[] =>
     arr.map(fn),
+
+  mapN: ((...fns: any[]) => (arr: any[]) => {
+    const result = [];
+    for (const item of arr) {
+      const res = [];
+      for (let i = 0; i < fns.length; i++) {
+        res.push(fns[i](item[i]));
+      }
+      result.push(res);
+    }
+    return result;
+  }) as MapN,
 
   flatMap: <T, R>(fn: (item: T, index: number) => R[]) => (arr: T[]): R[] =>
     arr.flatMap(fn),
@@ -24,6 +37,8 @@ export const Arr = {
     arr.some(fn),
 
   includes: <T>(item: T) => (arr: T[]): boolean => arr.includes(item),
+
+  isEmpty: <T>(arr: T[]): boolean => arr.length === 0,
 
   reduce:
     <T, R>(fn: (acc: R, item: T, index: number) => R, initialValue: R) =>
@@ -52,6 +67,18 @@ export const Arr = {
     const seen = new Set<string>();
     return arr.filter((item) => {
       const key = `${item}`;
+      if (seen.has(key)) {
+        return false;
+      }
+      seen.add(key);
+      return true;
+    });
+  },
+
+  uniqueBy: <T, K>(getKey: (value: T) => K) => (arr: T[]): T[] => {
+    const seen = new Set<K>();
+    return arr.filter((item) => {
+      const key = getKey(item);
       if (seen.has(key)) {
         return false;
       }
@@ -167,4 +194,38 @@ export const Arr = {
 
     return result;
   },
+
+  zip: <T, U>(arr1: T[], arr2: U[]): [T, U][] =>
+    arr1.map((item, index) => [item, arr2[index]]),
+
+  unzip: <T, U>(arr: [T, U][]): [T[], U[]] =>
+    arr.reduce(
+      ([acc1, acc2], [item1, item2]) => [[...acc1, item1], [...acc2, item2]],
+      [[], []] as [T[], U[]],
+    ),
 };
+
+type MapN =
+  & (<T1, U1>(fn: (item: T1) => U1) => (arr: T1[]) => U1[])
+  & (<T1, T2, U1, U2>(
+    fn1: (item: T1) => U1,
+    fn2: (item: T2) => U2,
+  ) => (arr: [T1, T2][]) => [U1, U2][])
+  & (<T1, T2, T3, U1, U2, U3>(
+    fn1: (item: T1) => U1,
+    fn2: (item: T2) => U2,
+    fn3: (item: T3) => U3,
+  ) => (arr: [T1, T2, T3][]) => [U1, U2, U3][])
+  & (<T1, T2, T3, T4, U1, U2, U3, U4>(
+    fn1: (item: T1) => U1,
+    fn2: (item: T2) => U2,
+    fn3: (item: T3) => U3,
+    fn4: (item: T4) => U4,
+  ) => (arr: [T1, T2, T3, T4][]) => [U1, U2, U3, U4][])
+  & (<T1, T2, T3, T4, T5, U1, U2, U3, U4, U5>(
+    fn1: (item: T1) => U1,
+    fn2: (item: T2) => U2,
+    fn3: (item: T3) => U3,
+    fn4: (item: T4) => U4,
+    fn5: (item: T5) => U5,
+  ) => (arr: [T1, T2, T3, T4, T5][]) => [U1, U2, U3, U4, U5][]);

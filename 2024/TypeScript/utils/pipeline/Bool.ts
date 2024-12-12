@@ -1,6 +1,7 @@
 export const Bool = {
-  passAll: <T>(...args: ((value: T) => boolean)[]) => (value: T) =>
-    args.every((fn) => fn(value)),
+  passAll:
+    <T extends any[]>(args: ((...params: T) => boolean)[]) => (...params: T) =>
+      args.every((fn) => fn(...params)),
 
   passAny:
     <T extends any[]>(args: ((...params: T) => boolean)[]) => (...params: T) =>
@@ -12,6 +13,8 @@ export const Bool = {
   gte: <T>(a: T) => (b: T): boolean => a <= b,
   eq: <T>(a: T) => (b: T): boolean => a === b,
   neq: <T>(a: T) => (b: T): boolean => a !== b,
+
+  defined: <T>(value: T) => value !== undefined,
 
   invert: <T>(fn: (value: T) => boolean) => (value: T) => !fn(value),
 

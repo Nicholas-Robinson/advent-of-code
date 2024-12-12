@@ -4,8 +4,8 @@ export const Fn = {
     return value;
   },
 
-  debug: <T>(value: T) => {
-    console.log(value);
+  debug: <T>(tag: string = "DEBUG ::") => (value: T) => {
+    console.log(tag, value);
     return value;
   },
 
