@@ -1,47 +1,47 @@
 import { differenceTuple } from "../utils/calc.ts";
 import { pipeline } from "../utils/pipeline/_pipeline.ts";
 import { pipe } from "../utils/pipeline/_pipe.ts";
-import { Arr } from "../utils/pipeline/Arr.ts";
-import { Bool } from "../utils/pipeline/Bool.ts";
-import { Fn } from "../utils/pipeline/Fn.ts";
-import { Str } from "../utils/pipeline/Str.ts";
+import { _Arr } from "../utils/pipeline/_Arr.ts";
+import { _Bool } from "../utils/pipeline/_Bool.ts";
+import { _Fn } from "../utils/pipeline/_Fn.ts";
+import { _Str } from "../utils/pipeline/_Str.ts";
 
 type Parsed = number[][];
 
 export const parse = pipeline(
-  Str.lines,
-  Arr.map(Str.words),
-  Arr.mapNested(Number),
+  _Str.lines,
+  _Arr.map(_Str.words),
+  _Arr.mapNested(Number),
 );
 
-const isAllIncreasingOrDecreasing = Bool.passAny([
-  checkMagnitude(Fn.uncurry(Bool.gt)),
-  checkMagnitude(Fn.uncurry(Bool.lt)),
+const isAllIncreasingOrDecreasing = _Bool.passAny([
+  checkMagnitude(_Fn.uncurry(_Bool.gt)),
+  checkMagnitude(_Fn.uncurry(_Bool.lt)),
 ]);
 
 export const part1 = pipeline(
   // Filter out the lines that are all increasing or decreasing
-  Arr.filter(isAllIncreasingOrDecreasing),
+  _Arr.filter(isAllIncreasingOrDecreasing),
   // Filter out the differences that are greater than 2
-  Arr.map(Arr.pairWithNext),
-  Arr.mapNested(differenceTuple),
-  Arr.filterNested((i) => i === 0 || i > 3),
+  _Arr.map(_Arr.pairWithNext),
+  _Arr.mapNested(differenceTuple),
+  _Arr.filterNested((i) => i === 0 || i > 3),
   // The empty lists are the ones that are safe
-  Arr.filter((i) => i.length === 0),
-  Arr.length,
+  _Arr.filter((i) => i.length === 0),
+  _Arr.length,
 );
 
-const createSubArrayOf = Fn.flip(Arr.dropNth<number>);
+const createSubArrayOf = _Fn.flip(_Arr.dropNth<number>);
 
 export function part2(input: Parsed) {
   const faultTolerantSafeLines = input.filter((line) => {
     return pipe(
-      Arr.range(0, line.length),
-      Arr.map(createSubArrayOf(line)),
-      Arr.prepend(line),
-      Arr.map((row) => [row]),
-      Arr.some(
-        pipeline(part1, Bool.gt(0)),
+      _Arr.range(0, line.length),
+      _Arr.map(createSubArrayOf(line)),
+      _Arr.prepend(line),
+      _Arr.map((row) => [row]),
+      _Arr.some(
+        pipeline(part1, _Bool.gt(0)),
       ),
     );
   });

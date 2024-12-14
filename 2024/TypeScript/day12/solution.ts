@@ -1,9 +1,9 @@
 import { pipe } from "../utils/pipeline/_pipe.ts";
 import { pipeline } from "../utils/pipeline/_pipeline.ts";
-import { Arr } from "../utils/pipeline/Arr.ts";
-import { Fn } from "../utils/pipeline/Fn.ts";
-import { Num } from "../utils/pipeline/Num.ts";
-import { Str } from "../utils/pipeline/Str.ts";
+import { _Arr } from "../utils/pipeline/_Arr.ts";
+import { _Fn } from "../utils/pipeline/_Fn.ts";
+import { _Num } from "../utils/pipeline/_Num.ts";
+import { _Str } from "../utils/pipeline/_Str.ts";
 import { Plot } from "./plot.ts";
 
 type Garden = Plot[][];
@@ -11,27 +11,27 @@ type Parser = (input: string) => Garden;
 type Solution = (input: Garden) => number;
 
 export const parse: Parser = pipeline(
-  Str.lines,
-  Arr.map(Str.chars),
-  Arr.mapNested(Plot.initialise),
+  _Str.lines,
+  _Arr.map(_Str.chars),
+  _Arr.mapNested(Plot.initialise),
 );
 
 export const part1: Solution = (garden: Garden) =>
   pipe(
     garden,
     getPlots,
-    Arr.mapNested(Plot.getParameterDetails(garden)),
-    Arr.map(Arr.unzip),
-    Arr.mapNested(Num.sumAll),
-    Arr.map(Num.multiplyAll),
-    Num.sumAll,
+    _Arr.mapNested(Plot.getParameterDetails(garden)),
+    _Arr.map(_Arr.unzip),
+    _Arr.mapNested(_Num.sumAll),
+    _Arr.map(_Num.multiplyAll),
+    _Num.sumAll,
   );
 
 export const part2 = (garden: Garden) =>
   pipe(
     garden,
     getPlots,
-    Arr.map((plots) =>
+    _Arr.map((plots) =>
       [
         plots.filter((plot) => plot.hasNorthernBoundary(garden)),
         plots.filter((plot) => plot.hasSouthernBoundary(garden)),
@@ -40,26 +40,26 @@ export const part2 = (garden: Garden) =>
         plots.map((plot) => plot.area()),
       ] as [Plot[], Plot[], Plot[], Plot[], number[]]
     ),
-    Arr.mapN(
+    _Arr.mapN(
       getDistinctFences("horizontal"),
       getDistinctFences("horizontal"),
       getDistinctFences("vertical"),
       getDistinctFences("vertical"),
-      Arr.map(Fn.identity),
+      _Arr.map(_Fn.identity),
     ),
-    Arr.mapN(
-      Arr.length,
-      Arr.length,
-      Arr.length,
-      Arr.length,
-      Num.sumAll,
+    _Arr.mapN(
+      _Arr.length,
+      _Arr.length,
+      _Arr.length,
+      _Arr.length,
+      _Num.sumAll,
     ),
-    Arr.map((details) => [
-      pipe(details, Arr.take(4), Num.sumAll),
-      Arr.last(details),
+    _Arr.map((details) => [
+      pipe(details, _Arr.take(4), _Num.sumAll),
+      _Arr.last(details),
     ]),
-    Arr.map(Num.multiplyAll),
-    Num.sumAll,
+    _Arr.map(_Num.multiplyAll),
+    _Num.sumAll,
   );
 
 function getPlots(garden: Garden) {
@@ -87,7 +87,7 @@ const getDistinctFences = (direction: Direction) => (borders: Plot[]) => {
     .toSorted((a, b) => offCoord(a) - offCoord(b));
 
   for (const plot of plots) {
-    if (isTheSameFenceSegment(direction, plot, Arr.last(fenceRun))) {
+    if (isTheSameFenceSegment(direction, plot, _Arr.last(fenceRun))) {
       fenceRun.push(plot);
       continue;
     }

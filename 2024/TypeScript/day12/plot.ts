@@ -1,7 +1,7 @@
 import { pipe } from "../utils/pipeline/_pipe.ts";
 import { _Set } from "../utils/pipeline/_Set.ts";
-import { Arr } from "../utils/pipeline/Arr.ts";
-import { Bool } from "../utils/pipeline/Bool.ts";
+import { _Arr } from "../utils/pipeline/_Arr.ts";
+import { _Bool } from "../utils/pipeline/_Bool.ts";
 
 export class Plot {
   static initialise(value: string, x: number, y: number): Plot {
@@ -73,15 +73,15 @@ export class Plot {
 
     return pipe(
       this.getNeighbors(garden) as Plot[],
-      Arr.filter(
-        Bool.passAll([
-          Bool.defined<Plot>,
-          Bool.invert(_Set.has(included)),
+      _Arr.filter(
+        _Bool.passAll([
+          _Bool.defined<Plot>,
+          _Bool.invert(_Set.has(included)),
           this.isSamePlotType.bind(this),
         ]),
       ),
-      Arr.flatMap((plot) => plot.getWholePlot(garden, included)),
-      Arr.append(this as Plot),
+      _Arr.flatMap((plot) => plot.getWholePlot(garden, included)),
+      _Arr.append(this as Plot),
     );
   }
 
@@ -92,13 +92,13 @@ export class Plot {
   perimeter(garden: Plot[][]) {
     return pipe(
       this.getNeighbors(garden) as Plot[],
-      Arr.filter(
-        Bool.passAny([
-          Bool.invert(Bool.defined<Plot>),
-          Bool.invert(this.isSamePlotType.bind(this)),
+      _Arr.filter(
+        _Bool.passAny([
+          _Bool.invert(_Bool.defined<Plot>),
+          _Bool.invert(this.isSamePlotType.bind(this)),
         ]),
       ),
-      Arr.length,
+      _Arr.length,
     );
   }
 }

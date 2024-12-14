@@ -1,34 +1,34 @@
 import { pipeline } from "../utils/pipeline/_pipeline.ts";
 import { pipe } from "../utils/pipeline/_pipe.ts";
-import { Arr } from "../utils/pipeline/Arr.ts";
-import { Bool } from "../utils/pipeline/Bool.ts";
-import { Num } from "../utils/pipeline/Num.ts";
-import { Obj } from "../utils/pipeline/Obj.ts";
-import { Str } from "../utils/pipeline/Str.ts";
-import { Tuple } from "../utils/pipeline/Tuple.ts";
+import { _Arr } from "../utils/pipeline/_Arr.ts";
+import { _Bool } from "../utils/pipeline/_Bool.ts";
+import { _Num } from "../utils/pipeline/_Num.ts";
+import { _Obj } from "../utils/pipeline/_Obj.ts";
+import { _Str } from "../utils/pipeline/_Str.ts";
+import { _Tuple } from "../utils/pipeline/_Tuple.ts";
 
 type Parsed = { rules: [number, number][]; updates: number[][] };
 
 const parseRules = pipeline(
-  Arr.map(Str.bisect("|")),
-  Arr.map(Tuple.mapBoth(Number, Number)),
+  _Arr.map(_Str.bisect("|")),
+  _Arr.map(_Tuple.mapBoth(Number, Number)),
 );
 
 const parseUpdates = pipeline(
-  Arr.map(Str.split(",")),
-  Arr.mapNested(Number),
+  _Arr.map(_Str.split(",")),
+  _Arr.mapNested(Number),
 );
 
 export const parse = pipeline(
-  Str.bisect("\n\n"),
-  Tuple.mapBoth(Str.lines, Str.lines),
-  Tuple.mapBoth(parseRules, parseUpdates),
-  Tuple.toNamedRecord("rules", "updates"),
+  _Str.bisect("\n\n"),
+  _Tuple.mapBoth(_Str.lines, _Str.lines),
+  _Tuple.mapBoth(parseRules, parseUpdates),
+  _Tuple.toNamedRecord("rules", "updates"),
 );
 
 const buildRulesLookup = pipeline(
-  Arr.groupBy(Tuple.first<number, number>),
-  Obj.mapValues(Arr.map(Tuple.second)),
+  _Arr.groupBy(_Tuple.first<number, number>),
+  _Obj.mapValues(_Arr.map(_Tuple.second)),
 );
 
 export function part1({ rules, updates }: Parsed) {
@@ -36,9 +36,9 @@ export function part1({ rules, updates }: Parsed) {
 
   return pipe(
     updates,
-    Arr.filter(filterByRules(rulesLookup)),
-    Arr.map((arr) => arr[Math.floor(arr.length / 2)]),
-    Num.sumAll,
+    _Arr.filter(filterByRules(rulesLookup)),
+    _Arr.map((arr) => arr[Math.floor(arr.length / 2)]),
+    _Num.sumAll,
   );
 }
 
@@ -47,10 +47,10 @@ export function part2({ rules, updates }: Parsed) {
 
   return pipe(
     updates,
-    Arr.filter(Bool.invert(filterByRules(rulesLookup))),
-    Arr.map(Arr.sort(sortByRules(rulesLookup))),
-    Arr.map((arr) => arr[Math.floor(arr.length / 2)]),
-    Num.sumAll,
+    _Arr.filter(_Bool.invert(filterByRules(rulesLookup))),
+    _Arr.map(_Arr.sort(sortByRules(rulesLookup))),
+    _Arr.map((arr) => arr[Math.floor(arr.length / 2)]),
+    _Num.sumAll,
   );
 }
 

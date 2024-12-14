@@ -1,7 +1,7 @@
 import { pipe } from "../utils/pipeline/_pipe.ts";
-import { Arr } from "../utils/pipeline/Arr.ts";
-import { Num } from "../utils/pipeline/Num.ts";
-import { Str } from "../utils/pipeline/Str.ts";
+import { _Arr } from "../utils/pipeline/_Arr.ts";
+import { _Num } from "../utils/pipeline/_Num.ts";
+import { _Str } from "../utils/pipeline/_Str.ts";
 
 type Segment = [fileId: number, space: number];
 type Parsed = string[];
@@ -9,12 +9,12 @@ type Parsed = string[];
 export function parse(raw: string): Parsed {
   return pipe(
     raw,
-    Str.chars,
-    Arr.map(Number),
+    _Str.chars,
+    _Arr.map(Number),
     toPairs,
-    Arr.flatMap(toFileBlock),
-    Arr.flatten,
-    Arr.map(String),
+    _Arr.flatMap(toFileBlock),
+    _Arr.flatten,
+    _Arr.map(String),
   );
 }
 
@@ -29,22 +29,22 @@ export function part1(input: Parsed) {
   return pipe(
     // De-fragment,
     disk,
-    Arr.map(nextRead),
-    Arr.take(fileBlocksLength),
+    _Arr.map(nextRead),
+    _Arr.take(fileBlocksLength),
     // Checksum
-    Arr.map(Number),
-    Arr.pairWithIndex,
-    Arr.map(Num.multiplyAll),
-    Num.sumAll,
+    _Arr.map(Number),
+    _Arr.pairWithIndex,
+    _Arr.map(_Num.multiplyAll),
+    _Num.sumAll,
   );
 }
 
 export function part2(input: Parsed) {
-  const chunks = pipe(input, Arr.clone, categoriseMemory);
+  const chunks = pipe(input, _Arr.clone, categoriseMemory);
   const fileChunks = pipe(
     chunks,
-    Arr.filter(isFileChunk),
-    Arr.reverse,
+    _Arr.filter(isFileChunk),
+    _Arr.reverse,
   );
 
   for (const fileChunk of fileChunks) {
@@ -62,13 +62,13 @@ export function part2(input: Parsed) {
   return pipe(
     chunks,
     uncatagoriseMemory,
-    Arr.flatten,
-    Arr.map((c) => c === "." ? "0" : c),
+    _Arr.flatten,
+    _Arr.map((c) => c === "." ? "0" : c),
     // Checksum
-    Arr.map(Number),
-    Arr.pairWithIndex,
-    Arr.map(Num.multiplyAll),
-    Num.sumAll,
+    _Arr.map(Number),
+    _Arr.pairWithIndex,
+    _Arr.map(_Num.multiplyAll),
+    _Num.sumAll,
   );
 }
 
@@ -97,7 +97,7 @@ function categoriseMemory(memory: string[]) {
 
   while (memoryClone.length) {
     const slot = memoryClone.shift() as string;
-    if (Arr.last(chunks)?.[1] === slot) Arr.last(chunks)[2]++;
+    if (_Arr.last(chunks)?.[1] === slot) _Arr.last(chunks)[2]++;
     else chunks.push([slot === "." ? "space" : "file", slot, 1]);
   }
 

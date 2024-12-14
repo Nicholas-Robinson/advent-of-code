@@ -1,15 +1,22 @@
-export const Str = {
+import { pipe } from "./_pipe.ts";
+import { _Arr } from "./_Arr.ts";
+
+export const _Str = {
   split: (separator: string | RegExp) => (str: string) => str.split(separator),
   bisect: (separator: string | RegExp) => (str: string) =>
     str.split(separator, 2) as [string, string],
 
-  match: (regex: RegExp) => (str: string) => str.match(regex),
+  match: (regex: RegExp) => (str: string) => str.match(regex) ?? [],
+  matchGroups: (regex: RegExp) => (str: string) =>
+    pipe(str, _Str.match(regex), _Arr.drop(1)),
   includes: (substring: string) => (str: string) => str.includes(substring),
 
-  drop: (n: number) => (arr: string): string => arr.slice(n),
-  dropEnd: (n: number) => (arr: string): string => arr.slice(0, arr.length - n),
+  drop: (n: number) => (str: string): string => str.slice(n),
+  dropEnd: (n: number) => (str: string): string => str.slice(0, str.length - n),
+  dropWhile: (predicate: (char: string) => boolean) => (str: string): string =>
+    pipe(str, _Str.chars, _Arr.dropWhile(predicate), _Str.unchars),
 
-  take: (n: number) => (arr: string): string => arr.slice(0, n),
+  take: (n: number) => (str: string): string => str.slice(0, n),
 
   paragraphs: (str: string): string[] => str.split("\n\n"),
   lines: (str: string): string[] => str.split("\n"),

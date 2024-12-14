@@ -1,4 +1,4 @@
-export const Bool = {
+export const _Bool = {
   passAll:
     <T extends any[]>(args: ((...params: T) => boolean)[]) => (...params: T) =>
       args.every((fn) => fn(...params)),

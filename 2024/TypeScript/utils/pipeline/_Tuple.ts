@@ -1,4 +1,9 @@
-export const Tuple = {
+import { _Arr } from "./_Arr.ts";
+
+export const _Tuple = {
+  lift: <T, U>([first, second]: (T | U)[]): [T, U] => [first, second] as [T, U],
+  from: <T, U>(first: T, second: U): [T, U] => [first, second],
+
   first: <T, U>(tuple: [T, U]): T => tuple[0],
   second: <T, U>(tuple: [T, U]): U => tuple[1],
 
@@ -33,3 +38,5 @@ export const Tuple = {
 
   swap: <T, U>(tuple: [T, U]): [U, T] => [tuple[1], tuple[0]],
 };
+
+export type Tuple<T, U = T> = [T, U];

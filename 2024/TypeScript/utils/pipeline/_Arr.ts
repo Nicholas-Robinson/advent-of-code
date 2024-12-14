@@ -1,7 +1,8 @@
 import { pipe } from "./_pipe.ts";
 
-export const Arr = {
+export const _Arr = {
   of: <T>(...items: T[]): T[] => items,
+  from: <T>(arr: ArrayLike<T>): T[] => Array.from(arr),
 
   range: (start: number, end: number) =>
     Array.from({ length: end - start }, (_, i) => i + start),
@@ -118,10 +119,22 @@ export const Arr = {
   drop: <T>(n: number) => (arr: T[]): T[] => arr.slice(n),
   dropEnd: <T>(n: number) => (arr: T[]): T[] => arr.slice(0, arr.length - n),
   dropNth: <T>(n: number) => (arr: T[]): T[] => arr.filter((_, i) => i !== n),
+  dropWhile: <T>(fn: (item: T, index: number) => boolean) => (arr: T[]): T[] =>
+    arr.slice(arr.findIndex((item, index) => !fn(item, index))),
 
   take: <T>(n: number) => (arr: T[]): T[] => arr.slice(0, n),
 
   prepend: <T>(item: T) => (arr: T[]): T[] => [item, ...arr],
+
+  pairs: <T>(arr: T[]): [T, T][] => {
+    const output: [T, T][] = [];
+
+    for (let i = 0; i < arr.length; i += 2) {
+      output.push([arr[i], arr[i + 1]]);
+    }
+
+    return output;
+  },
 
   pairWithNext: <T>(arr: T[]): [T, T][] => {
     const output: [T, T][] = [];
@@ -146,7 +159,7 @@ export const Arr = {
   pairWithIndexNested: <T>(arr: T[][]): [number, number, T][][] =>
     pipe(
       arr,
-      Arr.mapNested((item, x, y) => [x, y, item] as [number, number, T]),
+      _Arr.mapNested((item, x, y) => [x, y, item] as [number, number, T]),
     ),
 
   groupBy:

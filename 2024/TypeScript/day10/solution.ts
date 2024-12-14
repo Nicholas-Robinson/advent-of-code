@@ -1,9 +1,9 @@
 import { pipeline } from "../utils/pipeline/_pipeline.ts";
 import { _Set } from "../utils/pipeline/_Set.ts";
-import { Arr } from "../utils/pipeline/Arr.ts";
-import { Fn } from "../utils/pipeline/Fn.ts";
-import { Num } from "../utils/pipeline/Num.ts";
-import { Str } from "../utils/pipeline/Str.ts";
+import { _Arr } from "../utils/pipeline/_Arr.ts";
+import { _Fn } from "../utils/pipeline/_Fn.ts";
+import { _Num } from "../utils/pipeline/_Num.ts";
+import { _Str } from "../utils/pipeline/_Str.ts";
 import { FixNode } from "./fixNode.ts";
 
 type Parsed = FixNode[];
@@ -12,12 +12,12 @@ type Solution = (input: Parsed) => number;
 
 export const parse: Parser = pipeline(
   // Parse input
-  Str.lines,
-  Arr.map(Str.chars),
-  Arr.mapNested(Number),
+  _Str.lines,
+  _Arr.map(_Str.chars),
+  _Arr.mapNested(Number),
   // Create and populate the map
-  Arr.mapNested(FixNode.create),
-  Fn.tap((map) => {
+  _Arr.mapNested(FixNode.create),
+  _Fn.tap((map) => {
     for (let y = 0; y < map.length; y++) {
       for (let x = 0; x < map[y].length; x++) {
         const node = map[y][x];
@@ -29,18 +29,18 @@ export const parse: Parser = pipeline(
     }
   }),
   // Find all trail heads
-  Arr.filterNested(FixNode.isTrailHead),
-  Arr.flatten,
+  _Arr.filterNested(FixNode.isTrailHead),
+  _Arr.flatten,
 );
 
 export const part1: Solution = pipeline(
-  Arr.map((node) => node.findEnds([], [])),
-  Arr.map(pipeline(_Set.from, _Set.size)),
-  Num.sumAll,
+  _Arr.map((node) => node.findEnds([], [])),
+  _Arr.map(pipeline(_Set.from, _Set.size)),
+  _Num.sumAll,
 );
 
 export const part2: Solution = pipeline(
-  Arr.map((node) => node.findEnds([], [])),
-  Arr.map(Arr.length),
-  Num.sumAll,
+  _Arr.map((node) => node.findEnds([], [])),
+  _Arr.map(_Arr.length),
+  _Num.sumAll,
 );

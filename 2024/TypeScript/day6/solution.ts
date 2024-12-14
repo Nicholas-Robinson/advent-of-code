@@ -1,10 +1,10 @@
 import { pipeline } from "../utils/pipeline/_pipeline.ts";
 import { pipe } from "../utils/pipeline/_pipe.ts";
-import { Arr } from "../utils/pipeline/Arr.ts";
-import { Bool } from "../utils/pipeline/Bool.ts";
-import { Num } from "../utils/pipeline/Num.ts";
-import { Str } from "../utils/pipeline/Str.ts";
-import { Tuple } from "../utils/pipeline/Tuple.ts";
+import { _Arr } from "../utils/pipeline/_Arr.ts";
+import { _Bool } from "../utils/pipeline/_Bool.ts";
+import { _Num } from "../utils/pipeline/_Num.ts";
+import { _Str } from "../utils/pipeline/_Str.ts";
+import { _Tuple } from "../utils/pipeline/_Tuple.ts";
 
 type Cood = [x: number, y: number];
 type Vec = [Cood, Cood];
@@ -12,51 +12,51 @@ type Vec = [Cood, Cood];
 type Parsed = [Cood, string[]];
 
 export const parse = pipeline(
-  Str.lines,
-  Arr.map(Str.chars),
-  Tuple.pairWith(Arr.findIndexNested(Bool.eq("^"))),
-  Tuple.mapFirst(Arr.map(Str.unchars)),
-  Tuple.swap,
+  _Str.lines,
+  _Arr.map(_Str.chars),
+  _Tuple.pairWith(_Arr.findIndexNested(_Bool.eq("^"))),
+  _Tuple.mapFirst(_Arr.map(_Str.unchars)),
+  _Tuple.swap,
 );
 
 export function part1([[x, y], lines]: Parsed) {
   return pipe(
     getPath(lines, [x, y]),
-    Arr.unique,
-    Arr.length,
-    Num.subtract(1),
+    _Arr.unique,
+    _Arr.length,
+    _Num.subtract(1),
   );
 }
 
 export function part2([[x, y], lines]: Parsed) {
   return pipe(
     getPath(lines, [x, y]),
-    Arr.unique,
-    Arr.flatMap(addNewTestBlock(lines)),
-    Arr.map((path) => getPath(path, [x, y])),
-    Arr.filter(pointsAtSomething(lines)),
-    Arr.length,
+    _Arr.unique,
+    _Arr.flatMap(addNewTestBlock(lines)),
+    _Arr.map((path) => getPath(path, [x, y])),
+    _Arr.filter(pointsAtSomething(lines)),
+    _Arr.length,
   );
 }
 
 const getPath = (lines: string[], position: Cood) =>
   pipe(
     [[position, [0, -1]]] as Vec[],
-    Arr.generateNextUntil(
+    _Arr.generateNextUntil(
       takeStepOrTurnRight(lines),
       isTheEndOfThePath(lines),
     ),
-    Arr.map(Tuple.first),
+    _Arr.map(_Tuple.first),
   );
 
 const isTheEndOfThePath = (lines: string[]) =>
-  Bool.passAny([
+  _Bool.passAny([
     isWalkingInALoop,
     lookDownAndSeeNothing(lines),
   ]);
 
 const takeStepOrTurnRight = (lines: string[]) =>
-  Bool.branch(
+  _Bool.branch(
     lookForwardAndSeeObstetrical(lines),
     turnRightSlim,
     stepForwardSlim,
@@ -97,16 +97,16 @@ const turnRightSlim = ([[x, y], [dx, dy]]: Vec): Vec => [[x, y], [-dy, dx]];
 
 const pointsAtSomething = (lines: string[]) =>
   pipeline(
-    Arr.last<Cood>,
+    _Arr.last<Cood>,
     ([x, y]) => lines[y]?.[x] !== undefined,
   );
 
 const addNewTestBlock = (lines: string[]) => ([ux, uy]: Cood) => {
-  const clone = lines.map(Str.chars);
+  const clone = lines.map(_Str.chars);
 
   if (clone[uy] === undefined || clone[uy][ux] === undefined) return [];
   if (clone[uy][ux] !== ".") return [];
   clone[uy][ux] = "#";
 
-  return [clone.map(Str.unchars)];
+  return [clone.map(_Str.unchars)];
 };

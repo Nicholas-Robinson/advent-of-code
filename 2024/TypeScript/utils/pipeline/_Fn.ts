@@ -1,4 +1,4 @@
-export const Fn = {
+export const _Fn = {
   tap: <T>(fn: (value: T) => void) => (value: T): T => {
     fn(value);
     return value;
