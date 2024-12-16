@@ -114,6 +114,20 @@ export const _Arr = {
       return [-1, -1];
     },
 
+  findNested:
+    <T>(fn: (item: T, x: number, y: number) => boolean) =>
+    (arr: T[][]): T | undefined => {
+      for (let y = 0; y < arr.length; y++) {
+        if (arr[y] === undefined) return undefined;
+        for (let x = 0; x < arr[y].length; x++) {
+          if (fn(arr[y][x], x, y)) {
+            return arr[y][x];
+          }
+        }
+      }
+      return undefined;
+    },
+
   flatten: <T>(arr: T[][]): T[] => arr.flat(),
 
   drop: <T>(n: number) => (arr: T[]): T[] => arr.slice(n),

@@ -1,11 +1,11 @@
-import { _Arr } from "../utils/pipeline/_Arr.ts"
-import { _Fn } from "../utils/pipeline/_Fn.ts"
-import { _Num } from "../utils/pipeline/_Num.ts"
-import { pipe } from "../utils/pipeline/_pipe.ts"
-import { pipeline } from "../utils/pipeline/_pipeline.ts"
-import { _Str } from "../utils/pipeline/_Str.ts"
-import type { Tuple } from "../utils/pipeline/_Tuple.ts"
-import { _Tuple } from "../utils/pipeline/_Tuple.ts"
+import { _Arr } from "../utils/pipeline/_Arr.ts";
+import { _Fn } from "../utils/pipeline/_Fn.ts";
+import { _Num } from "../utils/pipeline/_Num.ts";
+import { pipe } from "../utils/pipeline/_pipe.ts";
+import { pipeline } from "../utils/pipeline/_pipeline.ts";
+import { _Str } from "../utils/pipeline/_Str.ts";
+import type { Tuple } from "../utils/pipeline/_Tuple.ts";
+import { _Tuple } from "../utils/pipeline/_Tuple.ts";
 
 type Parsed = {
   width: number;
@@ -52,9 +52,11 @@ export function part2({ width, height, times, input }: Parsed) {
     _Arr.range(0, times),
     _Arr.map((sample) => solve(sample, width, height)(input)),
     _Arr.map((coords) => print(coords, width, height)),
-    _Arr.filter(x => x.some(y => {
-      return (new RegExp(`1{10}1+`)).test(y.join("\n"))
-    })),
+    _Arr.filter((x) =>
+      x.some((y) => {
+        return (new RegExp(`1{10}1+`)).test(y.join("\n"));
+      })
+    ),
     // _Arr.sort((a, b) => score(b) - score(a)),
     _Arr.map((a) =>
       a.map((b) => b.map((i) => i === 0 ? " " : "#").join("")).join("\n")
