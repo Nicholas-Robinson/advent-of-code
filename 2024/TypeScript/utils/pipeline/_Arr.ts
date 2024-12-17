@@ -8,7 +8,7 @@ export const _Arr = {
     Array.from({ length: end - start }, (_, i) => i + start),
 
   clone: <T>(arr: T[]): T[] => arr.slice(),
-  append: <T>(item: T) => (arr: T[]): T[] => arr.slice().concat(item),
+  append: <T>(item: T) => (arr: T[]): T[] => arr.slice().concat([item]),
 
   map: <T, R>(fn: (item: T, index: number) => R) => (arr: T[]): R[] =>
     arr.map(fn),

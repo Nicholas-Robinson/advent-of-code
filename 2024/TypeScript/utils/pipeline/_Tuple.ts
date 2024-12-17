@@ -1,5 +1,3 @@
-import { _Arr } from "./_Arr.ts";
-
 export const _Tuple = {
   lift: <T, U>([first, second]: (T | U)[]): [T, U] => [first, second] as [T, U],
   from: <T, U>(first: T, second: U): [T, U] => [first, second],

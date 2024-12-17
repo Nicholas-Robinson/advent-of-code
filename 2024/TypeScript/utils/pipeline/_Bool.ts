@@ -14,7 +14,7 @@ export const _Bool = {
   eq: <T>(a: T) => (b: T): boolean => a === b,
   neq: <T>(a: T) => (b: T): boolean => a !== b,
 
-  defined: <T>(value: T) => value !== undefined,
+  defined: <T>(value: T) => value != undefined,
 
   invert: <T>(fn: (value: T) => boolean) => (value: T) => !fn(value),
 

@@ -1,11 +1,11 @@
-import { _Arr } from "../utils/pipeline/_Arr.ts"
-import { _Bool } from "../utils/pipeline/_Bool.ts"
-import { _Fn } from "../utils/pipeline/_Fn.ts"
-import { _Num } from "../utils/pipeline/_Num.ts"
-import { pipe } from "../utils/pipeline/_pipe.ts"
-import { pipeline } from "../utils/pipeline/_pipeline.ts"
-import { _Str } from "../utils/pipeline/_Str.ts"
-import { _Tuple, Tuple } from "../utils/pipeline/_Tuple.ts"
+import { _Arr } from "../utils/pipeline/_Arr.ts";
+import { _Bool } from "../utils/pipeline/_Bool.ts";
+import { _Fn } from "../utils/pipeline/_Fn.ts";
+import { _Num } from "../utils/pipeline/_Num.ts";
+import { pipe } from "../utils/pipeline/_pipe.ts";
+import { pipeline } from "../utils/pipeline/_pipeline.ts";
+import { _Str } from "../utils/pipeline/_Str.ts";
+import { _Tuple, Tuple } from "../utils/pipeline/_Tuple.ts";
 
 type Direction = "^" | ">" | "v" | "<";
 type Parsed = Tuple<string[][], Direction[]>;
@@ -81,12 +81,11 @@ export function part2([map, instructions]: Parsed) {
     _Arr.findIndexNested((item) => item === ROBOT),
   );
 
-
   for (const instruction of instructions) {
     const direction = DIR[instruction];
-    const didMove = instruction === 'v' || instruction === '^'
-    ? swapDoubleV([[rx, ry]], direction, expandedMap)
-    : swap([rx, ry], direction, expandedMap);
+    const didMove = instruction === "v" || instruction === "^"
+      ? swapDoubleV([[rx, ry]], direction, expandedMap)
+      : swap([rx, ry], direction, expandedMap);
 
     if (didMove) {
       [rx, ry] = [rx + _Tuple.first(direction), ry + _Tuple.second(direction)];
