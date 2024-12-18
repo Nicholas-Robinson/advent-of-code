@@ -1,8 +1,8 @@
-import { _Arr } from "../utils/pipeline/_Arr.ts"
-import { _Num } from "../utils/pipeline/_Num.ts"
-import { pipe } from "../utils/pipeline/_pipe.ts"
-import { _Str } from "../utils/pipeline/_Str.ts"
-import { _Tuple, Tuple } from "../utils/pipeline/_Tuple.ts"
+import { _Arr } from "../utils/pipeline/_Arr.ts";
+import { _Num } from "../utils/pipeline/_Num.ts";
+import { pipe } from "../utils/pipeline/_pipe.ts";
+import { _Str } from "../utils/pipeline/_Str.ts";
+import { _Tuple, Tuple } from "../utils/pipeline/_Tuple.ts";
 
 type Parsed = string[][];
 
@@ -109,7 +109,7 @@ export function part2(input: Parsed) {
   }
 
   console.log(
-      map.map((x) => x.map((y) => y?.toString() ?? "#").join("\t")).join("\n"),
+    map.map((x) => x.map((y) => y?.toString() ?? "#").join("\t")).join("\n"),
   );
   const toTest: [Tuple<number>, number][] = [[start, 0]];
   const paths: Tuple<number>[][] = [[start]];
@@ -156,8 +156,6 @@ export function part2(input: Parsed) {
   );
 
   console.log(final);
-
-
 
   return undefined;
 }
