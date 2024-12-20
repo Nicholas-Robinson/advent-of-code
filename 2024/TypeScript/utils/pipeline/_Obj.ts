@@ -1,6 +1,8 @@
+import type { Tuple } from "./_Tuple.ts"
+
 export const _Obj = {
   entries: <K extends keyof any, V>(obj: Record<K, V>) =>
-    Object.entries(obj) as [K, V][],
+    Object.entries(obj) as Tuple<K, V>[],
 
   keys: <K extends keyof any>(obj: Record<K, any>) => Object.keys(obj) as K[],
 
@@ -8,7 +10,7 @@ export const _Obj = {
 
   isEmpty: <K extends keyof any, V>(obj: Record<K, V>) => _Obj.keys(obj).length === 0,
 
-  fromEntries: <K extends keyof any, V>(entries: [K, V][]) =>
+  fromEntries: <K extends keyof any, V>(entries: Tuple<K, V>[]) =>
     Object.fromEntries(entries) as Record<K, V>,
 
   mapKeys: <K extends keyof any, V>(fn: (key: K) => K) => (obj: Record<K, V>) =>

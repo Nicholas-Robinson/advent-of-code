@@ -80,6 +80,20 @@ export function pipe<S, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10>(
   f9: (source: R8) => R9,
   f10: (source: R9) => R10,
 ): R10;
+export function pipe<S, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11>(
+  source: S,
+  f1: (source: S) => R1,
+  f2: (source: R1) => R2,
+  f3: (source: R2) => R3,
+  f4: (source: R3) => R4,
+  f5: (source: R4) => R5,
+  f6: (source: R5) => R6,
+  f7: (source: R6) => R7,
+  f8: (source: R7) => R8,
+  f9: (source: R8) => R9,
+  f10: (source: R9) => R10,
+  f11: (source: R10) => R11,
+): R11;
 export function pipe<T>(
   source: T,
   ...functions: ((source: any) => any)[]

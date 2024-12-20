@@ -97,8 +97,8 @@ export const _Arr = {
       arr.flatMap((subArr, y) => subArr.flatMap((value, x) => fn(value, x, y))),
 
   filterNested:
-    <T>(fn: (item: T, index: number) => boolean) => (arr: T[][]): T[][] =>
-      arr.map((subArr) => subArr.filter(fn)),
+    <T>(fn: (item: T, x: number, y: number) => boolean) => (arr: T[][]): T[][] =>
+      arr.map((subArr, y) => subArr.filter((value, x) =>  fn(value, x, y))),
 
   findIndexNested:
     <T>(fn: (item: T, x: number, y: number) => boolean) =>

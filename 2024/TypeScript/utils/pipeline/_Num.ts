@@ -19,4 +19,6 @@ export const _Num = {
 
   max: (arr: number[]): number => Math.max(...arr),
   min: (arr: number[]): number => Math.min(...arr),
+
+  isNumber: (num: unknown): num is number => typeof num === "number",
 };
