@@ -230,6 +230,19 @@ export const _Arr = {
       ([acc1, acc2], [item1, item2]) => [[...acc1, item1], [...acc2, item2]],
       [[], []] as [T[], U[]],
     ),
+
+  columns: <T>(arr: T[][]): T[][] => {
+    const longest = arr.reduce((acc, subArr) => Math.max(acc, subArr.length), 0);
+    const result = [] as T[][];
+    for (let x = 0; x < longest; x++) {
+      const column = [];
+      for (let y = 0; y < arr.length; y++) {
+        if (arr[y]?.[x]) column.push(arr[y][x]);
+      }
+      result.push(column);
+    }
+    return result;
+  }
 };
 
 type MapN =

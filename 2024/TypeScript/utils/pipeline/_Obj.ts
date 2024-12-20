@@ -6,6 +6,8 @@ export const _Obj = {
 
   values: <V>(obj: Record<any, V>) => Object.values(obj) as V[],
 
+  isEmpty: <K extends keyof any, V>(obj: Record<K, V>) => _Obj.keys(obj).length === 0,
+
   fromEntries: <K extends keyof any, V>(entries: [K, V][]) =>
     Object.fromEntries(entries) as Record<K, V>,
 

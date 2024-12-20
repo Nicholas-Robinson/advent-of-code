@@ -11,6 +11,8 @@ export const _Str = {
     pipe(str, _Str.match(regex), _Arr.drop(1)),
   includes: (substring: string) => (str: string) => str.includes(substring),
 
+  isEmpty: (str: string) => str === "",
+
   drop: (n: number) => (str: string): string => str.slice(n),
   dropEnd: (n: number) => (str: string): string => str.slice(0, str.length - n),
   dropWhile: (predicate: (char: string) => boolean) => (str: string): string =>
