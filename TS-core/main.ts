@@ -1,6 +1,9 @@
 import { createInterface, Interface } from "node:readline/promises";
 import * as fs from "node:fs";
 import { run } from "node:test";
+import { execSync } from "node:child_process";
+import { writeFileSync } from "node:fs";
+import { readFileSync } from "fs";
 
 const CASE_INTRO = "--- AOC "
 const CASE_END = "--- END"
@@ -83,6 +86,7 @@ function printInstructions(year: string, day: string) {
 
     console.log()
     console.log("Available commands")
+    console.log("• init \t\t=> Initialise the day's solution")
     if (part === 1) console.log("• toggle \t=> Activate part 2")
     if (part === 2) console.log("• toggle \t=> Activate part 1")
     console.log("• run \t\t=> Run solution")
@@ -96,6 +100,10 @@ async function listenForCommands(cli: Interface) {
     const [answer, command] = (await cli.question("Command: ")).split(" ");
 
     switch (answer) {
+        case "init": {
+            if (year != null && day != null) copyTemplate(year, day)
+            break;
+        }
         case "toggle": {
             part = [1, 2].find(p => p !== part) as 1 | 2;
             break;
@@ -130,13 +138,6 @@ async function listenForCommands(cli: Interface) {
 }
 
 async function watchForChanges() {
-    // const solutionPath = `../${year}/TypeScript/day${day}/solution.ts`
-    // const inputPaths = [
-    //     `../${year}/TypeScript/day${day}/input.part${part}.txt`,
-    //     `../${year}/TypeScript/day${day}/input.txt`,
-    // ]
-
-
     return new Promise<void>(resolve => {
         try {
             fs.watch(`../${year}/TypeScript/day${day}`, () => resolve())
@@ -196,25 +197,32 @@ function runSolution() {
     if (!runningInput || !solution || !parser || !part) return;
     const cases = loadCases(runningInput)
 
-    console.log(cases)
+    console.log(">>", cases)
 
 }
 
 function loadCases(raw: string) {
     const cases: CaseDetails[] = [];
 
-    let caseDetails: CaseDetails = { name: "", part, lines: [] };
+    let caseDetails: CaseDetails = { name: "", part, lines: [] },
+        isInScope = false;
     for (let line of raw.split("\n")) {
+        if (!isInScope && line.trim() === "") {
+            continue;
+        }
+
         if (line.startsWith(CASE_INTRO)) {
             const [p, name] = line.slice(CASE_INTRO.length).split(" | ");
             caseDetails.part = parsePart(p) ?? part;
             caseDetails.name = name ?? "Input";
             caseDetails.lines = []
 
+            isInScope = true;
         } else if (line.startsWith(CASE_END)) {
             cases.push(caseDetails);
             caseDetails = { name: "", part, lines: [] }
 
+            isInScope = false;
         } else {
             caseDetails.lines.push(line);
         }
@@ -227,4 +235,18 @@ function loadCases(raw: string) {
     }
 
     return cases;
+}
+
+function copyTemplate(year: string, day: string) {
+    const dir = `../${year}/TypeScript/day${day}`
+    execSync(`mkdir ${dir}`);
+
+    const solution = `${dir}/solution.ts`;
+    execSync(`touch ${solution}`);
+    writeFileSync(solution, readFileSync(`./__template/day/solution.ts`));
+
+    const input = `${dir}/input.txt`;
+    execSync(`touch ${input}`);
+    writeFileSync(input, readFileSync(`./__template/day/input.txt`));
+    writeFileSync(input, readFileSync(`./__template/day/input.txt`));
 }
