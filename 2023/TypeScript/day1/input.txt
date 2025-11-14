@@ -1,0 +1,3 @@
+--- AOC 1 | Testing
+This is some input
+--- END
