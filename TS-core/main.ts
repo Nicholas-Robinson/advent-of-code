@@ -1,12 +1,14 @@
 import { createInterface, Interface } from "node:readline/promises";
 import * as fs from "node:fs";
-import { run } from "node:test";
 import { execSync } from "node:child_process";
 import { writeFileSync } from "node:fs";
 import { readFileSync } from "fs";
+import { createRequire } from "node:module";
 
 const CASE_INTRO = "--- AOC "
 const CASE_END = "--- END"
+
+const require = createRequire(import.meta.url);
 
 let cli: Interface | undefined
 
@@ -14,7 +16,7 @@ let year: string | undefined,
     day: string | undefined,
     part: 1 | 2 = 1;
 
-let solution: (<T>(input: T) => void) | undefined,
+let solution: (<T>(input: T) => string | Promise<string>) | undefined,
     parser: (<T>(raw: string) => T) | undefined,
     runningInput: string | undefined = undefined,
     runningInputFile: string | undefined = undefined
@@ -36,7 +38,7 @@ async function tick() {
 
     await readSolution()
     await readInput()
-    runSolution()
+    await runSolution()
 
     printInstructions(year, day);
 
@@ -150,7 +152,7 @@ async function watchForChanges() {
 
 async function readSolution() {
     try {
-        const module = await import(`../${year}/TypeScript/day${day}/solution.ts`);
+        const module = require(`../${year}/TypeScript/day${day}/solution.ts?new=${Date.now()}`);
         if (!part || !day || !year) return;
 
         const suffix = ['', 'One', 'Two'][part];
@@ -193,12 +195,20 @@ type CaseDetails = {
     lines: string[];
 }
 
-function runSolution() {
+
+async function runSolution() {
     if (!runningInput || !solution || !parser || !part) return;
     const cases = loadCases(runningInput)
 
-    console.log(">>", cases)
+    for await (const c of cases) {
+        if (part !== c.part) continue;
+        console.log(`${c.name} [${c.part}] :: Running...`);
+        const input = parser(c.lines.join('\n'))
+        const answer = await solution(input);
+        console.log(`${c.name} [${c.part}] :: ${answer}`)
+    }
 
+    console.log()
 }
 
 function loadCases(raw: string) {
