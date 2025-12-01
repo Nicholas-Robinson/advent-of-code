@@ -3,12 +3,14 @@ import * as fs from "node:fs";
 import { execSync } from "node:child_process";
 import { writeFileSync } from "node:fs";
 import { readFileSync } from "fs";
-import { createRequire } from "node:module";
+import { fileURLToPath } from "node:url";
+import { dirname, resolve } from "node:path";
 
 const CASE_INTRO = "--- AOC "
 const CASE_END = "--- END"
 
-const require = createRequire(import.meta.url);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 let cli: Interface | undefined
 
@@ -152,8 +154,11 @@ async function watchForChanges() {
 
 async function readSolution() {
     try {
-        const module = require(`../${year}/TypeScript/day${day}/solution.ts?new=${Date.now()}`);
         if (!part || !day || !year) return;
+
+        const solutionPath = resolve(__dirname, `../${year}/TypeScript/day${day}/solution.ts`);
+        const modulePath = `file://${solutionPath}?t=${Date.now()}`;
+        const module = await import(modulePath);
 
         const suffix = ['', 'One', 'Two'][part];
 
