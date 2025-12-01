@@ -38,9 +38,13 @@ async function tick() {
     if (day === undefined) return initialiseDay(cli)
     if (![1, 2].includes(part)) return initialisePart(cli)
 
-    await readSolution()
-    await readInput()
-    await runSolution()
+    try {
+        await readSolution()
+        await readInput()
+        await runSolution()
+    } catch (e) {
+        console.trace(e)
+    }
 
     printInstructions(year, day);
 
@@ -200,7 +204,6 @@ type CaseDetails = {
     lines: string[];
 }
 
-
 async function runSolution() {
     if (!runningInput || !solution || !parser || !part) return;
     const cases = loadCases(runningInput)
@@ -221,6 +224,7 @@ function loadCases(raw: string) {
 
     let caseDetails: CaseDetails = { name: "", part, lines: [] },
         isInScope = false;
+
     for (let line of raw.split("\n")) {
         if (!isInScope && line.trim() === "") {
             continue;
@@ -233,12 +237,12 @@ function loadCases(raw: string) {
             caseDetails.lines = []
 
             isInScope = true;
-        } else if (line.startsWith(CASE_END)) {
+        } else if (isInScope && line.startsWith(CASE_END)) {
             cases.push(caseDetails);
             caseDetails = { name: "", part, lines: [] }
 
             isInScope = false;
-        } else {
+        } else if (isInScope) {
             caseDetails.lines.push(line);
         }
     }
