@@ -7,7 +7,6 @@ export function parse(raw: string): Input {
 const DIAL = Array.from({ length: 100 }, (_, i) => i)
 
 export function partOne(input: Input) {
-
     let pos = 50, cnt = 0
     for (let instruction of input) {
         pos = move(pos, instruction)
@@ -17,7 +16,7 @@ export function partOne(input: Input) {
     return cnt
 }
 
-function move(from: number, instruction: string, len = DIAL.length) {
+function move(from: number, instruction: string) {
     const direction = instruction[0]
     const distance = parseInt(instruction.slice(1))
     const delta = direction === 'L' ? -distance : distance
@@ -26,5 +25,25 @@ function move(from: number, instruction: string, len = DIAL.length) {
 }
 
 export function partTwo(input: Input) {
+    let pos = 50, cnt = 0
+    for (let instruction of input) {
+        const path = moves(pos, instruction)
+        pos = path.at(-1)!
+        cnt += path.filter(x => x % DIAL.length === 0).length
+    }
 
+    return cnt
+}
+
+function moves(from: number, instruction: string) {
+    const direction = instruction[0]
+    const distance = parseInt(instruction.slice(1))
+    const delta = direction === 'L' ? -1 : 1
+
+    let ret = []
+    for (let i = 1; i <= distance; i++) {
+        ret.push(from += delta)
+    }
+
+    return ret
 }

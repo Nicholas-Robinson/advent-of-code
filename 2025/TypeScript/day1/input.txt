@@ -1,4 +1,4 @@
---- AOC 1 | Sample input
+--- AOC | Sample input
 L68
 L30
 R48
@@ -11,7 +11,7 @@ R14
 L82
 --- END
 
---- AOC 1 | Full input
+--- AOC | Full input
 R29
 R41
 R8
