@@ -1,2 +1,5 @@
---- AOC 1 | Sample input
+--- AOC | Sample input
+--- END
+
+x--- AOC | Sample input
 --- END
