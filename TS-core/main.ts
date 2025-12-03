@@ -5,9 +5,14 @@ import { writeFileSync } from "node:fs";
 import { readFileSync } from "fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
+import { InstructionsPrintTask, LoadedEnvPrintTask, Printer, ResultsPrintTask } from "./pinter.js";
 
 const CASE_INTRO = "--- AOC "
 const CASE_END = "--- END"
+
+const NS_PER_US = 1000n;
+const NS_PER_MS = 1000000n;
+const NS_PER_SEC = 1000000000n;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -22,6 +27,12 @@ let solution: (<T>(input: T) => string | Promise<string>) | undefined,
     parser: (<T>(raw: string) => T) | undefined,
     runningInput: string | undefined = undefined,
     runningInputFile: string | undefined = undefined
+
+const resultsPrintTask = new ResultsPrintTask()
+const loadedEnvPrintTask = new LoadedEnvPrintTask()
+const instructionsPrintTask = new InstructionsPrintTask()
+
+const printer = new Printer(resultsPrintTask, loadedEnvPrintTask, instructionsPrintTask)
 
 while (true) {
     await tick()
@@ -38,20 +49,39 @@ async function tick() {
     if (day === undefined) return initialiseDay(cli)
     if (![1, 2].includes(part)) return initialisePart(cli)
 
+    instructionsPrintTask.accept({ part })
+
+    const asyncWork = [
+        updateSolution(),
+        Promise.race([
+            watchForChanges(),
+            listenForCommands(cli),
+        ])
+    ]
+
+    printer.print()
+
+    await Promise.all(asyncWork);
+}
+
+async function updateSolution() {
     try {
         await readSolution()
         await readInput()
+
+        loadedEnvPrintTask.accept({
+            part,
+            day: day!,
+            year: year!,
+            hasParser: !!parser,
+            hasSolution: !!solution,
+            loadedInput: runningInputFile
+        })
+
         await runSolution()
     } catch (e) {
         console.trace(e)
     }
-
-    printInstructions(year, day);
-
-    await Promise.race([
-        watchForChanges(),
-        listenForCommands(cli),
-    ])
 }
 
 function parsePart(part: string | undefined) {
@@ -80,32 +110,9 @@ async function initialisePart(cli: Interface) {
     part = answer
 }
 
-function printInstructions(year: string, day: string) {
-    console.log(`🚀 Running :: Day ${day}, ${year} | Part ${part}`);
-
-    console.log()
-    const suffix = ['', 'One', 'Two'][part];
-    if (parser) console.log(`✅  Found parser`);
-    else console.log(`⚠️  Could not find a parser called: parse or parsePart${suffix}`)
-    if (solution) console.log(`✅  Loaded solution: part${suffix}`);
-    else console.log(`⚠️  Could not find a solution called: part${suffix}`)
-    if (runningInput !== undefined) console.log(`✅  Running input: ${runningInputFile}`);
-    else console.log(`⚠️  No input.txt or input.part${part}.txt found`)
-
-    console.log()
-    console.log("Available commands")
-    console.log("• init \t\t=> Initialise the day's solution")
-    if (part === 1) console.log("• toggle \t=> Activate part 2")
-    if (part === 2) console.log("• toggle \t=> Activate part 1")
-    console.log("• run \t\t=> Run solution")
-    console.log("• part [number] => Set the active part")
-    console.log("• day  [number] => Set the active day")
-    console.log("• year [number] => Set the active year")
-}
-
 async function listenForCommands(cli: Interface) {
     console.log()
-    const [answer, command] = (await cli.question("Command: ")).split(" ");
+    const [answer, command] = (await cli.question("")).split(" ");
 
     switch (answer) {
         case "init": {
@@ -206,17 +213,33 @@ type CaseDetails = {
 
 async function runSolution() {
     if (!runningInput || !solution || !parser || !part) return;
-    const cases = loadCases(runningInput)
 
-    for await (const c of cases) {
-        if (part !== c.part) continue;
-        console.log(`${c.name} [${c.part}] :: Running...`);
-        const input = parser(c.lines.join('\n'))
-        const answer = await solution(input);
-        console.log(`${c.name} [${c.part}] :: ${answer}`)
+    resultsPrintTask.reset()
+
+    await Promise.all(
+        loadCases(runningInput).map(c => test(c))
+    )
+}
+
+async function test(c: CaseDetails) {
+    if (!runningInput || !solution || !parser || !part) return;
+
+    const tracker = resultsPrintTask.make()
+    tracker.set({ status: 'running', label: `${c.name} [${c.part}]` })
+
+    const input = parser(c.lines.join('\n'))
+    const start = process.hrtime.bigint()
+
+    try {
+        const result = await solution(input);
+        tracker.set({ status: 'complete', timeTaken: getFormattedDuration(start), result })
+    } catch (e) {
+        tracker.set({
+            status: 'failed',
+            timeTaken: getFormattedDuration(start),
+            trace: new Error('Case failed', { cause: e })
+        })
     }
-
-    console.log()
 }
 
 function loadCases(raw: string) {
@@ -231,9 +254,9 @@ function loadCases(raw: string) {
         }
 
         if (line.startsWith(CASE_INTRO)) {
-            const [p, name] = line.slice(CASE_INTRO.length).split(" | ");
+            const [p, name] = line.slice(CASE_INTRO.length).split("|");
             caseDetails.part = parsePart(p) ?? part;
-            caseDetails.name = name ?? "Input";
+            caseDetails.name = name?.trim() ?? "Input";
             caseDetails.lines = []
 
             isInScope = true;
@@ -268,4 +291,30 @@ function copyTemplate(year: string, day: string) {
     execSync(`touch ${input}`);
     writeFileSync(input, readFileSync(`./__template/day/input.txt`));
     writeFileSync(input, readFileSync(`./__template/day/input.txt`));
+}
+
+function getFormattedDuration(startTimeNs: bigint) {
+    const endTimeNs = process.hrtime.bigint();
+    let totalDurationNs = endTimeNs - startTimeNs;
+
+    if (totalDurationNs < 0n) {
+        totalDurationNs = 0n;
+    }
+
+    // 1. Calculate Seconds (s)
+    const seconds = totalDurationNs / NS_PER_SEC;
+    totalDurationNs %= NS_PER_SEC;
+
+    // 2. Calculate Milliseconds (ms)
+    const milliseconds = totalDurationNs / NS_PER_MS;
+    totalDurationNs %= NS_PER_MS;
+
+    // 3. Calculate Microseconds (µs)
+    const microseconds = totalDurationNs / NS_PER_US;
+
+    return [
+        seconds > 0 ? `${seconds}s` : undefined,
+        milliseconds > 0 ? `${milliseconds}ms` : undefined,
+        microseconds > 0 ? `${microseconds}µs` : undefined,
+    ].filter(Boolean).join(' ')
 }
