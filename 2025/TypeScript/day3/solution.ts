@@ -9,38 +9,39 @@ export function partOne(input: Input) {
 }
 
 export function partTwo(input: Input) {
-    return maxJoltageWith(input, 12)
+    return maxJoltageWith(input, 12);
 }
 
 function maxJoltageWith(banks: Input, numberOfBats: number) {
     let totalJolatge = 0
-    for (let bank of banks) {
-        totalJolatge += findLargestJotage(bank, numberOfBats)
+    for (let i = 0, end = banks.length; i < end; ++i) {
+        totalJolatge += findLargestJotage(banks[i]!, numberOfBats)
     }
 
     return totalJolatge
 }
 
 function findLargestJotage(bank: number[], digitCount: number) {
-    let number = '', lastIndex = 0
+    let number = 0, lastIndex = 0, biggestIndex: number
     for (let i = digitCount - 1; i >= 0; --i) {
-        const [biggestIndex, value] = findIndexOfLargest(bank, lastIndex, i)
-        lastIndex = biggestIndex + lastIndex + 1
-        number += value
+        biggestIndex = findIndexOfLargest(bank, lastIndex, i)
+        lastIndex = biggestIndex + 1
+        number = number * 10 + bank[biggestIndex]!
     }
 
-    return Number(number)
+    return number
 }
 
 function findIndexOfLargest(bank: number[], start: number, endOffset: number) {
-    const list = bank.slice(start, bank.length - endOffset)
+    const list = bank
 
     let value: number = 0, pos: number = -1;
-    for (let i = 0; i < list.length; ++i) {
-        if (list[i]! <= value) continue;
-        value = list[i]!;
-        pos = i;
+    for (let i = start, end = bank.length - endOffset; i < end; ++i) {
+        if (list[i]! > value) {
+            value = list[i]!;
+            pos = i;
+        }
     }
 
-    return [pos, list[pos]!] as const
+    return pos
 }
