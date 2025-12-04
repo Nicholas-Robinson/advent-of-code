@@ -1,9 +1,38 @@
-type Input = boolean[][]
+type Input = { grid: boolean[], neighbours: number[][] }
 
 const ROLL = '@'
 
 export function parse(raw: string): Input {
-    return raw.split('\n').map(line => line.split('').map(c => c === ROLL))
+    const grid = raw.split('\n').map(line => line.split('').map(c => c === ROLL));
+    return { grid: grid.flatMap(line => line), neighbours: buildNeighboursLookup(grid) }
+}
+
+function buildNeighboursLookup(grid: boolean[][]) {
+    const height = grid.length, width = grid[0]!.length
+
+    const neighbours: number[][] = []
+    for (let y = 0; y < height; ++y) {
+        for (let x = 0; x < width; ++x) {
+            const list = []
+            if (y - 1 >= 0) {
+                list.push((y - 1) * height + x)
+                if (x - 1 >= 0) list.push((y - 1) * height + (x - 1))
+                if (x + 1 < width) list.push((y - 1) * height + (x + 1))
+            }
+
+            if (x - 1 >= 0) list.push(y * height + (x - 1))
+            if (x + 1 < width) list.push(y * height + (x + 1))
+
+            if (y + 1 < height) {
+                list.push((y + 1) * height + x)
+                if (x - 1 >= 0) list.push((y + 1) * height + (x - 1))
+                if (x + 1 < width) list.push((y + 1) * height + (x + 1))
+            }
+            neighbours.push(list)
+        }
+    }
+
+    return neighbours
 }
 
 export function partOne(input: Input) {
@@ -19,30 +48,22 @@ export function partTwo(input: Input) {
     return totalCleaned
 }
 
-function cleanHouse(input: Input) {
-    let toRemove: [number, number][] = []
-    for (let y = 0, yEnd = input.length; y < yEnd; ++y) {
-        for (let x = 0, xEnd = input[0]!.length; x < xEnd; ++x) {
-            if (input[y]?.[x] && countNeighbouringRolls(input, x, y) < 4) toRemove.push([x, y])
+function cleanHouse({ grid, neighbours }: Input) {
+    let toRemove: number[] = []
+    for (let i = 0, end = grid.length; i < end; ++i) {
+        if (grid[i] && countNeighbouringRolls(grid, neighbours[i]!) < 4) {
+            toRemove.push(i)
         }
     }
 
-    for (let [x, y] of toRemove) {
-        input[y]![x] = false
+    for (let i = 0, end = toRemove.length; i < end; ++i) {
+        grid[toRemove[i]!] = false
     }
 
     return toRemove.length
 }
 
-function countNeighbouringRolls(grid: Input, x: number, y: number) {
-    if (!grid[y]![x]) return 0
-
-    return +(grid[y + 1]?.[x + 1] == true) +
-        +(grid[y + 1]?.[x] == true) +
-        +(grid[y + 1]?.[x - 1] == true) +
-        +(grid[y]?.[x + 1] == true) +
-        +(grid[y]?.[x - 1] == true) +
-        +(grid[y - 1]?.[x + 1] == true) +
-        +(grid[y - 1]?.[x] == true) +
-        +(grid[y - 1]?.[x - 1] == true)
+function countNeighbouringRolls(grid: boolean[], neighbours: number[]) {
+    // @ts-ignore
+    return neighbours.reduce((sum, n) => sum + grid[n], 0)
 }
