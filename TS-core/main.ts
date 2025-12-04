@@ -1,7 +1,7 @@
 import { createInterface, Interface } from "node:readline/promises";
 import * as fs from "node:fs";
-import { execSync } from "node:child_process";
 import { writeFileSync } from "node:fs";
+import { execSync } from "node:child_process";
 import { readFileSync } from "fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
@@ -23,7 +23,7 @@ let year: string | undefined,
     day: string | undefined,
     part: 1 | 2 = 1;
 
-let solution: (<T>(input: T) => string | Promise<string>) | undefined,
+let solution: (<T>(input: T) => string) | undefined,
     parser: (<T>(raw: string) => T) | undefined,
     runningInput: string | undefined = undefined,
     runningInputFile: string | undefined = undefined
@@ -228,15 +228,20 @@ async function test(c: CaseDetails) {
     tracker.set({ status: 'running', label: `${c.name} [${c.part}]` })
 
     const input = parser(c.lines.join('\n'))
-    const start = process.hrtime.bigint()
+    // let result: string, start: bigint, end: bigint;
 
+    // Nothing here is inlined so this can go as fast as possible
+    const start = process.hrtime.bigint();
     try {
-        const result = await solution(input);
-        tracker.set({ status: 'complete', timeTaken: getFormattedDuration(start), result })
+        const result = solution(input);
+        const end = process.hrtime.bigint();
+
+        // Then we can faff about with object creation
+        tracker.set({ status: 'complete', timeTaken: getFormattedDuration(start, end), result })
     } catch (e) {
         tracker.set({
             status: 'failed',
-            timeTaken: getFormattedDuration(start),
+            timeTaken: getFormattedDuration(start, process.hrtime.bigint()),
             trace: new Error('Case failed', { cause: e })
         })
     }
@@ -293,8 +298,7 @@ function copyTemplate(year: string, day: string) {
     writeFileSync(input, readFileSync(`./__template/day/input.txt`));
 }
 
-function getFormattedDuration(startTimeNs: bigint) {
-    const endTimeNs = process.hrtime.bigint();
+function getFormattedDuration(startTimeNs: bigint, endTimeNs: bigint) {
     let totalDurationNs = endTimeNs - startTimeNs;
 
     if (totalDurationNs < 0n) {

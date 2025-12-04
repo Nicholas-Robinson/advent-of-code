@@ -1,5 +1,5 @@
 --- AOC | Sample input
 --- END
 
-x--- AOC | Sample input
+x--- AOC | Final input
 --- END
