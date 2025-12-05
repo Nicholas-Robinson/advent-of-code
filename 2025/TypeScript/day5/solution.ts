@@ -1,5 +1,5 @@
 type Range = [number, number]
-type Tester = (id: number) => boolean
+type Tester = (range: Range) => boolean
 type Input = { ranges: Range[], ids: number[] }
 
 export function parse(raw: string): Input {
@@ -7,7 +7,7 @@ export function parse(raw: string): Input {
 
     const ranges = rangesRaw!.split('\n').map(range =>
         range.split('-').map(Number) as Range
-    )
+    ).sort((a, b) => a[0] - b[0])
 
     const ids = idsRaw!.split('\n').map(Number)
 
@@ -20,34 +20,30 @@ export function partOne(input: Input) {
 }
 
 export function partTwo(input: Input) {
-    let ranges = input.ranges, last = Infinity
-    while (true) {
-        const adjustedRanges: [Range, Tester][] = []
-        for (let range of ranges) {
+    const adjustedRanges: [Range, Tester][] = []
 
-            const other = adjustedRanges
-                .find(([, test]) => test(range[0]) || test(range[1]))
+    for (let i = 0, end = input.ranges.length; i < end; ++i) {
+        const range = input.ranges[i]!
 
-            if (!other) {
-                adjustedRanges.push([range, makeRangeTester(range)])
-                continue
+        let merged = false
+        for (let j = 0, je = adjustedRanges.length; j < je && !merged; ++j) {
+            const other = adjustedRanges[j]!
+            if (other[1]!(range)) {
+                other[0] = [Math.min(other[0][0], range[0]), Math.max(other[0][1], range[1])]
+                other[1] = makeRangeRangeTester(other[0])
+                merged = true
             }
-
-            other[0] = [Math.min(other[0][0], range[0]), Math.max(other[0][1], range[1])]
-            other[1] = makeRangeTester(other[0])
         }
 
-        const total = adjustedRanges
-            .map(([[from, to]]) => to - from + 1)
-            .reduce((a, b) => a + b)
-
-        ranges = adjustedRanges.map(([r]) => r).reverse()
-
-        if (total === last) break
-        last = total
+        if (!merged) adjustedRanges.push([range, makeRangeRangeTester(range)])
     }
 
-    return last
+    let answer = 0
+    for (let i = 0, end = adjustedRanges.length; i < end; ++i) {
+        answer += adjustedRanges[i]![0][1] - adjustedRanges[i]![0][0] + 1
+    }
+
+    return answer
 }
 
 function makeIsFreshFilter(ranges: Range[]) {
@@ -57,4 +53,8 @@ function makeIsFreshFilter(ranges: Range[]) {
 
 function makeRangeTester([from, to]: Range) {
     return (id: number) => id >= from && id <= to
+}
+
+function makeRangeRangeTester([from, to]: Range) {
+    return ([f, t]: Range) => (f >= from && f <= to) || (t >= from && t <= to)
 }
