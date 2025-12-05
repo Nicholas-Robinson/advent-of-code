@@ -1,3 +1,5 @@
---- AOC 1 | Testing
-This is some input
+--- AOC | Sample input
+--- END
+
+x--- AOC | Final input
 --- END
