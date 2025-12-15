@@ -1,82 +1,81 @@
-import * as querystring from "node:querystring";
-import * as net from "node:net";
-
-type Input = Point[]
+type Point = [number, number, number]
+type Input = [iterations: number, points: [string, string, number][], locations: string[]]
 
 export function parse(raw: string): Input {
-    return raw.split('\n').map(Point.from)
-}
+    const [cnt, ...points] = raw.split("\n")
 
-const ITERATIONS = 10
-
-export function partOne(input: Input) {
-    const distancePairs: [Point, Point, number][] = []
-    for (let a = 0, aEnd = input.length; a < aEnd; ++a) {
-        for (let b = a + 1, bEnd = input.length; b < bEnd; ++b) {
-            distancePairs.push([input[a]!, input[b]!, distance(input[a]!, input[b]!)])
+    let pairs: [string, string, number][] = []
+    for (let i = 0, end = points.length; i < end; ++i) {
+        const from = points[i]!.split(',').map(Number) as Point
+        for (let j = i + 1; j < end; ++j) {
+            const to = points[j]!.split(',').map(Number) as Point
+            pairs.push([points[i]!, points[j]!, distance(from, to)])
         }
     }
 
-    // const networks = new Map<Point, Network>()
-    // for (let a of input) {
-    //     for (let b of input) {
-    //         if (a !== b) distancePairs.push([a, b, distance(a, b)])
-    //         if (!networks.has(a)) networks.set(a, new Network(a))
-    //         if (!networks.has(b)) networks.set(b, new Network(b))
-    //     }
-    // }
-    distancePairs.sort(([, , a], [, , b]) => a - b)
-
-    const networks = new Map(input.map(point => [point, new Network(point)]))
-
-    for (let i = 0; i < ITERATIONS; ++i) {
-        const [a, b] = distancePairs[i]!
-        const merged = networks.get(a)!.merge(networks.get(b)!)
-        networks.set(a, merged)
-        networks.set(b, merged)
-    }
-
-    const unique = Array.from(new Set(networks.values())).map(net => net.size)
-        .toSorted((a, b) => b - a)
-        .slice(0, 3)
-        // .reduce((a, b) => a * b)
-
-    return unique
+    return [
+        Number(cnt),
+        pairs.toSorted(([, , a], [, , b]) => a - b),
+        points
+    ]
 }
 
-export function partTwo(input: Input) {
+export function partOne([iterations, input]: Input) {
+    let circuits: Set<string>[] = []
+    for (let i = 0; i < iterations; ++i) {
+        const [from, to] = input[i]!
 
+        const unchanged: Set<string>[] = [], toLink: Set<string>[] = []
+        for (let circuit of circuits) {
+            if (circuit.has(from) || circuit.has(to)) toLink.push(circuit)
+            else unchanged.push(circuit)
+        }
+
+        const circuit = toLink.reduce((a, b) => a.union(b), new Set())
+        circuit.add(from)
+        circuit.add(to)
+
+        unchanged.push(circuit)
+        circuits = unchanged
+    }
+
+    return circuits
+    .toSorted((a, b) => b.size - a.size)
+    .slice(0, 3)
+    .map(s => s.size)
+    .reduce((a, b) => a * b)
 }
 
-function distance({ point: [x1, y1, z1] }: Point, { point: [x2, y2, z2] }: Point) {
-    return Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)
+export function partTwo([, input, points]: Input) {
+    let circuits: Set<string>[] = points.map(point => new Set([point])),
+        last: [string, string],
+        i = 0
+
+    while (circuits.length > 1 && i < input.length) {
+        const [from, to] = input[i++]!
+        last = [from, to]
+
+        const unchanged: Set<string>[] = [], toLink: Set<string>[] = []
+        for (let circuit of circuits) {
+            if (circuit.has(from) || circuit.has(to)) toLink.push(circuit)
+            else unchanged.push(circuit)
+        }
+
+        const circuit = toLink.reduce((a, b) => a.union(b), new Set())
+        circuit.add(from)
+        circuit.add(to)
+
+        unchanged.push(circuit)
+        circuits = unchanged
+    }
+
+    const [from, to] = last!
+    const [x1] = from!.split(',')
+    const [x2] = to!.split(',')
+
+    return Number(x1) * Number(x2)
 }
 
-class Point {
-    static from(raw: string) {
-        return new Point(raw.split(",").map(Number) as [number, number, number])
-    }
-
-    constructor(
-        readonly point: [number, number, number],
-    ) {
-    }
-}
-
-class Network {
-    private points = new Set<Point>()
-
-    constructor(initialPoint: Point) {
-        this.points.add(initialPoint)
-    }
-
-    get size() {
-        return this.points.size
-    }
-
-    merge(other: Network) {
-        this.points = this.points.union(other.points)
-        return this
-    }
-
+function distance([x1, y1, z1]: Point, [x2, y2, z2]: Point) {
+    return Math.sqrt(((x2 - x1) ** 2) + ((y2 - y1) ** 2) + ((z2 - z1) ** 2))
 }
