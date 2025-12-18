@@ -71,7 +71,7 @@ export class ResultsPrintTask extends PintTask<ResultsPintTaskPayload[]> {
             case 'failed': {
                 return [
                     `${payload.label} :: Failed`,
-                    ...(payload.trace?.stack?.split('\n') ?? [])
+                    (payload.trace?.cause ?? payload.trace)?.toString()
                 ]
             }
             case 'complete': {

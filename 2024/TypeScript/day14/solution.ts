@@ -1,125 +1,108 @@
-import { _Arr } from "../utils/pipeline/_Arr.ts";
-import { _Fn } from "../utils/pipeline/_Fn.ts";
-import { _Num } from "../utils/pipeline/_Num.ts";
-import { pipe } from "../utils/pipeline/_pipe.ts";
-import { pipeline } from "../utils/pipeline/_pipeline.ts";
-import { _Str } from "../utils/pipeline/_Str.ts";
-import type { Tuple } from "../utils/pipeline/_Tuple.ts";
-import { _Tuple } from "../utils/pipeline/_Tuple.ts";
+type Input = [Robot[], Pair]
 
-type Parsed = {
-  width: number;
-  height: number;
-  times: number;
-  input: Tuple<Tuple<number>>[];
-};
+export function parse(raw: string): Input {
+    const [dim, ...robotsRaw] = raw.split('\n')
 
-export const parse = (raw: string) => {
-  const [params, ...robots] = _Str.lines(raw);
+    const [w, h] = dim!.split(',')
 
-  const [width, height, times] = pipe(
-    params,
-    _Str.matchGroups(/(\d+),(\d+),(\d+)/),
-    _Arr.map(Number),
-  );
+    const robots = robotsRaw.map(line => {
+        const [, x, y, dx, dy] = line.match(/p=(-?\d+),(-?\d+) v=(-?\d+),(-?\d+)/)!
+        return new Robot([Number(x), Number(y)], [Number(dx), Number(dy)])
+    })
 
-  const input = pipe(
-    robots,
-    _Arr.map(
-      pipeline(
-        _Str.matchGroups(/p=(\d+),(\d+) v=(-?\d+),(-?\d+)/),
-        _Arr.map(Number),
-        _Arr.pairs,
-        _Tuple.lift,
-      ),
-    ),
-  );
-
-  return { width, height, times, input };
-};
-
-export function part1({ width, height, times, input }: Parsed) {
-  return pipe(
-    input,
-    solve(times, width, height),
-    quad(width, height),
-    _Num.multiplyAll,
-  );
+    return [robots, [Number(w), Number(h)]]
 }
 
-export function part2({ width, height, times, input }: Parsed) {
-  const a = pipe(
-    _Arr.range(0, times),
-    _Arr.map((sample) => solve(sample, width, height)(input)),
-    _Arr.map((coords) => print(coords, width, height)),
-    _Arr.filter((x) =>
-      x.some((y) => {
-        return (new RegExp(`1{10}1+`)).test(y.join("\n"));
-      })
-    ),
-    // _Arr.sort((a, b) => score(b) - score(a)),
-    _Arr.map((a) =>
-      a.map((b) => b.map((i) => i === 0 ? " " : "#").join("")).join("\n")
-    ),
-    _Arr.map((x, i) => _Fn.debug(`Sample ${i + 1}`)(x)),
-  );
-
-  return 1;
-}
-
-const score = (print: number[][]) =>
-  pipe(print, _Arr.flatten, _Arr.filter((x) => x > 0), _Arr.length);
-
-const applyMove = (len: number) => ([pos, move]: Tuple<number>) =>
-  move > 0 ? (move + pos) % len : (len + (move % len) + pos) % len;
-
-const solve =
-  (times: number, width: number, height: number) =>
-  (input: Tuple<Tuple<number>>[]) =>
-    pipe(
-      input,
-      _Arr.map(
-        pipeline(
-          _Tuple.mapSecond(
-            _Tuple.mapBoth(_Num.multiply(times), _Num.multiply(times)),
-          ),
-          _Arr.unzip,
-          _Tuple.mapBoth(_Tuple.lift, _Tuple.lift),
-          _Tuple.mapBoth(applyMove(width), applyMove(height)),
-        ),
-      ),
-    );
-
-function quad(width: number, height: number) {
-  const xFrom = Math.floor(width / 2);
-  const xTo = Math.ceil(width / 2);
-
-  const yFrom = Math.floor(height / 2);
-  const yTo = Math.ceil(height / 2);
-
-  return ((coords: Tuple<number>[]) => {
-    let tl = 0, tr = 0, bl = 0, br = 0;
-
-    for (const [x, y] of coords) {
-      if (x < xFrom && y < yFrom) tl++;
-      if (x >= xTo && y < yFrom) tr++;
-      if (x < xFrom && y >= yTo) bl++;
-      if (x >= xTo && y >= yTo) br++;
+export function partOne([robots, [width, height]]: Input) {
+    for (let i = 0; i < 100; ++i) {
+        robots.forEach(robot => robot.step(width, height))
     }
 
-    return [tl, tr, bl, br];
-  });
+    const grid: number[][] = Array.from({ length: height }, () => Array(width).fill(0))
+    robots.forEach(robot => robot.print(grid))
+
+    const a = [
+        topRightQuad(grid),
+        topLeftQuad(grid),
+        bottomRightQuad(grid),
+        bottomLeftQuad(grid),
+    ]
+
+    return a
+        .map(q => q.flat().filter(n => n).reduce((a, b) => a + b))
+        .reduce((a, b) => a * b)
 }
 
-function print(coords: Tuple<number>[], width: number, height: number) {
-  const print = Array.from(
-    { length: height },
-    () => Array.from({ length: width }, () => 0),
-  );
+export function partTwo([robots, [width, height]]: Input) {
+    let iteration = 0
+    while (iteration++ < 1_000_000) {
+        robots.forEach(robot => robot.step(width, height))
 
-  for (const [x, y] of coords) {
-    print[y][x]++;
-  }
+        const grid: number[][] = Array.from({ length: height }, () => Array(width).fill(0))
+        robots.forEach(robot => robot.print(grid))
 
-  return print;
+        let sum = 0, largest = -1
+        for (let row of grid) {
+            for (let i of row) {
+                if (i !== 0) {
+                    sum++
+                    continue
+                }
+
+                largest = Math.max(sum, largest)
+                sum = 0
+            }
+        }
+
+        if (largest > 12) {
+            return iteration
+        }
+    }
+
+    return -1
+}
+
+type Pair = [number, number]
+
+class Robot {
+    constructor(
+        private location: Pair,
+        private readonly velocity: Pair,
+    ) {
+    }
+
+    step(width: number, height: number) {
+        this.location[0] = clamp(this.location[0] + this.velocity[0], width)
+        this.location[1] = clamp(this.location[1] + this.velocity[1], height)
+    }
+
+    print(grid: number[][]) {
+        grid[this.location[1]!]![this.location[0]!]!++
+    }
+}
+
+function clamp(value: number, max: number) {
+    if (value < 0) return max + value
+    if (value >= max) return value % max
+    return value
+}
+
+function topLeftQuad(grid: number[][]) {
+    const rows = grid.slice(0, Math.floor(grid.length / 2))
+    return rows.map(line => line.slice(0, Math.floor(line.length / 2)))
+}
+
+function topRightQuad(grid: number[][]) {
+    const rows = grid.slice(0, Math.floor(grid.length / 2))
+    return rows.map(line => line.slice(Math.floor(line.length / 2) + 1))
+}
+
+function bottomLeftQuad(grid: number[][]) {
+    const rows = grid.slice(Math.floor(grid.length / 2) + 1)
+    return rows.map(line => line.slice(0, Math.floor(line.length / 2)))
+}
+
+function bottomRightQuad(grid: number[][]) {
+    const rows = grid.slice(Math.floor(grid.length / 2) + 1)
+    return rows.map(line => line.slice(Math.floor(line.length / 2) + 1))
 }
